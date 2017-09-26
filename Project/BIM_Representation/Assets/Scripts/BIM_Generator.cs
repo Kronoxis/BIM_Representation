@@ -6,15 +6,20 @@ public class BIM_Generator : MonoBehaviour
 {
     public string FilePath;
 
-    private Dictionary<uint, IfcEntity> _entities = new Dictionary<uint, IfcEntity>();
 
-	void Start ()
+	private void Start ()
 	{
+	    if (string.IsNullOrEmpty(FilePath))
+	    {
+	        Debug.LogError("Please specify a FilePath");
+            return;
+	    }
+
 	    var parser = new BIM_Parser(FilePath);
+	    if (!parser.IsValid()) return;
 	    while (!parser.IsEnd())
 	    {
-            var entity = parser.GetNextIfcEntity();
-	        _entities.Add(entity.Id, entity);
+	        parser.GetNextIfcTopologicalRepresentationItem();
 	    }
 	}
 }

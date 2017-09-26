@@ -17,8 +17,7 @@ public static class ParseHelpers
 
     public static float[] StringToFloatArr(string s, char delim = ',')
     {
-        char[] delims = {delim};
-        var values = s.Split(delims);
+        var values = s.Split(delim);
         float[] fArr = new float[values.Length];
 
         for (int i = 0; i < fArr.Length; ++i)
@@ -28,10 +27,33 @@ public static class ParseHelpers
         return fArr;
     }
 
-    //public static void AddEntity(this Dictionary<uint, IfcEntity> d, string line)
-    //{
-    //    var id = uint.Parse(line.Substring(1, line.IndexOf('=') - 1));
-    //    var entity = new IfcEntity(line);
-    //    d.Add(id, entity);
-    //}
+    public static uint GetId(string line)
+    {
+        var begin = 1;
+        var length = line.IndexOf('=') - begin;
+        return uint.Parse(line.Substring(begin, length));
+    }
+
+    public static string[] GetValues(string line, string toFind, char delim = ',')
+    {
+        var begin = line.IndexOf(toFind) + toFind.Length;
+        var length = line.Length - toFind.Length - 1 - begin;
+        return line.Substring(begin, length).Split(delim);
+    }
+
+    public static uint GetValueId(string value)
+    {
+        return uint.Parse(value.Substring(1));
+    }
+
+    public static List<uint> GetValueIds(string line, string toFind, char delim = ',')
+    {
+        List<uint> ids = new List<uint>();
+        var values = GetValues(line, toFind, delim);
+        foreach (var value in values)
+        {
+            ids.Add(GetValueId(value));
+        }
+        return ids;
+    }
 }

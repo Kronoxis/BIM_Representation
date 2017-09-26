@@ -200,6 +200,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 595feabfbdfd381419d539764e8d3761, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  FilePath: E:\School\3DAE4\Semester 5\Graduation Work\BIM\BIM-UNLIMITED-BUILD-QATAR-LIVE\BIM-UNLIMITED-BUILD-QATAR-LIVE\Exchange\IFC\IFC
+    Architect\BIMUnlimited_BQL_Exchange_Architecture_01.ifc
 --- !u!4 &1037275724
 Transform:
   m_ObjectHideFlags: 0

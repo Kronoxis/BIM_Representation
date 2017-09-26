@@ -1,4 +1,12 @@
-﻿public enum IfcTopologicalRepresentationItems
+﻿public enum IfcSectionTypes
+{
+    Header,
+    Data,
+    End,
+    Null
+}
+
+public enum IfcTopologicalRepresentationItems
 {
     IfcCartesianPoint,
     IfcPolyLoop,
