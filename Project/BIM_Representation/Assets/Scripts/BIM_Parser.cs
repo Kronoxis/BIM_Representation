@@ -16,18 +16,28 @@ public class BIM_Parser
     private StreamReader _sr;
     private string _line;
     private string _encoding;
-    private HeaderBlock _headerBlock;
-    private static Dictionary<uint, IfcTopologicalRepresentationItem> _items = new Dictionary<uint, IfcTopologicalRepresentationItem>();
 
     #region Constructor
-    public BIM_Parser(string filePath)
+    public BIM_Parser(string filePath, out HeaderBlock headerBlock)
     {
+        // Set default for headerblock
+        headerBlock = new HeaderBlock();
+
+        // Check for valid extension
         if (!CheckExtension(filePath)) return;
+
+        // Open file
         _sr = new StreamReader(filePath);
-        ReadEncoding();
-        if (!CheckEncoding()) return;
-        ReadHeader();
-        if (!CheckHeader()) return;
+
+        // Read encoding and check if supported
+        _encoding = ReadEncoding();
+        if (!CheckEncoding(_encoding)) return;
+
+        // Read header and check if valid
+        headerBlock = ReadHeader();
+        if (!CheckHeader(headerBlock)) return;
+
+        // Mark Parser as valid
         _isValid = true;
     }
     #endregion
@@ -52,17 +62,17 @@ public class BIM_Parser
     #endregion
 
     #region Encoding
-    private void ReadEncoding()
+    private string ReadEncoding()
     {
         _line = _sr.ReadLine();
-        _encoding = _line.Substring(0, _line.Length - 1);
+        return _line.Substring(0, _line.Length - 1);
     }
 
-    private bool CheckEncoding()
+    private bool CheckEncoding(string encoding)
     {
-        if (_encoding != SupportedEncoding)
+        if (encoding != SupportedEncoding)
         {
-            Debug.LogError("Encoding not supported!\nFile's Version: " + _encoding + "\nSupported Version: " + SupportedEncoding);
+            Debug.LogError("Encoding not supported!\nFile's Version: " + encoding + "\nSupported Version: " + SupportedEncoding);
             return false;
         }
         return true;
@@ -70,14 +80,14 @@ public class BIM_Parser
     #endregion
 
     #region Header
-    private void ReadHeader()
+    private HeaderBlock ReadHeader()
     {
         // Find Section Start
         var tryCount = 0;
         var isValid = false;
         while (!isValid)
         {
-            if (!GetLine()) return;
+            if (!GetLine()) return new HeaderBlock();
             if (_line == "HEADER;")
             {
                 isValid = true;
@@ -87,37 +97,37 @@ public class BIM_Parser
             if (tryCount > 10)
             {
                 Debug.LogError("Missing Header!");
-                return;
+                return new HeaderBlock();
             }
         }
 
         // Read Header Block
-        _headerBlock = new HeaderBlock(_sr);
+        var headerBlock = new HeaderBlock(_sr);
 
         // Find Section End
         tryCount = 0;
         isValid = false;
-        while (!isValid)
+        while (true)
         {
-            if (!GetLine()) return;
+            if (!GetLine()) break;
             if (_line == "ENDSEC;")
             {
-                _headerBlock.Valid = true;
-                isValid = true;
-                continue;
+                headerBlock.Valid = true;
+                break;
             }
             ++tryCount;
             if (tryCount > 10)
             {
                 Debug.LogError("Missing Header End!");
-                return;
+                break;
             }
         }
+        return headerBlock;
     }
 
-    private bool CheckHeader()
+    private bool CheckHeader(HeaderBlock headerBlock)
     {
-        if (!_headerBlock.Valid)
+        if (!headerBlock.Valid)
         {
             Debug.LogError("Header invalid!");
             return false;
@@ -127,47 +137,51 @@ public class BIM_Parser
     #endregion
 
     #region Data
-    public void GetNextIfcTopologicalRepresentationItem()
+    public IfcTopologicalRepresentationItem GetNextIfcTopologicalRepresentationItem()
     {
         // Get next data line
         do
         {
-            if (!GetLine()) return;
+            if (!GetLine()) return new IfcNull();
 
         } while (_line[0] != '#');
 
-        // Create Topological Representation Item
-        var item = GetTopologicalRepresentationItem(_line);
-        if (item == IfcTopologicalRepresentationItems.Null) return;
+        // Get Topological Representation Item Type from line
+        var type = GetTopologicalRepresentationItemType(_line);
+        if (type == IfcTopologicalRepresentationItems.Null) return new IfcNull();
+        
+        // Get Id from line
         var id = ParseHelpers.GetId(_line);
-        Debug.Log("ID: " + id); 
-        switch (item)
+        //Debug.Log("ID: " + id);
+
+        // Create Topological Representation Item
+        IfcTopologicalRepresentationItem item = new IfcNull();
+        switch (type)
         {
             case IfcTopologicalRepresentationItems.IfcCartesianPoint:
-                _items.Add(id, new IfcCartesionPoint(id, _line));
+                item = new IfcCartesionPoint(id, _line);
                 break;
             case IfcTopologicalRepresentationItems.IfcPolyLoop:
-                _items.Add(id, new IfcPolyLoop(id, _line));
+                item = new IfcPolyLoop(id, _line);
                 break;
             case IfcTopologicalRepresentationItems.IfcFaceOuterBound:
-                _items.Add(id, new IfcFaceOuterBound(id, _line));
+                item = new IfcFaceOuterBound(id, _line);
                 break;
             case IfcTopologicalRepresentationItems.IfcFace:
-                _items.Add(id, new IfcFace(id, _line));
+                item = new IfcFace(id, _line);
                 break;
             case IfcTopologicalRepresentationItems.IfcClosedShell:
-                _items.Add(id, new IfcClosedShell(id, _line));
-                break;
-            case IfcTopologicalRepresentationItems.Null:
+                item = new IfcClosedShell(id, _line);
                 break;
         }
+        return item;
     }
 
-    private IfcTopologicalRepresentationItems GetTopologicalRepresentationItem(string line)
+    private IfcTopologicalRepresentationItems GetTopologicalRepresentationItemType(string line)
     {
-        var begin = line.IndexOf('=') + 2;
+        var begin = line.IndexOf('=') + 1;
         var length = line.IndexOf('(') - begin;
-        var lineType = line.Substring(begin, length);
+        var lineType = line.Substring(begin, length).Trim(' ');
         var items = Enum.GetValues(typeof(IfcTopologicalRepresentationItems)).Cast<IfcTopologicalRepresentationItems>().ToList();
         foreach (var item in items)
         {
@@ -210,12 +224,6 @@ public class BIM_Parser
         return _isValid;
     }
     #endregion
-
-    public static T GetItem<T>(uint id) where T : IfcTopologicalRepresentationItem
-    {
-        return _items[id] as T;
-    }
-
 
     //public string IfcFilePath;
     //

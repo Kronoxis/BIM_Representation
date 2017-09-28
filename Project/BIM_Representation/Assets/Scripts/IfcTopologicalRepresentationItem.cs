@@ -8,11 +8,6 @@ public abstract class IfcTopologicalRepresentationItem
 {
     public uint Id;
 
-    public override string ToString()
-    {
-        return "ID: #" + Id + ": ";
-    }
-
     public uint GetId()
     {
         return Id;
@@ -47,29 +42,13 @@ public abstract class IfcTopologicalRepresentationItem
 #region Null
 public class IfcNull : IfcTopologicalRepresentationItem
 {
-    public override string ToString()
-    {
-        return "Null";
-    }
 }
 #endregion
 
 #region Point
 public abstract class Point : IfcTopologicalRepresentationItem
 {
-}
-
-public class IfcCartesionPoint : Point
-{
     public List<float> Coordinates;
-
-    public IfcCartesionPoint(uint id, string line)
-    {
-        Id = id;
-        var begin = line.IndexOf('(') + 2;
-        var length = line.Length - 3 - begin;
-        Coordinates = ParseHelpers.StringToFloatArr(line.Substring(begin, length)).ToList();
-    }
 
     public Vector3 GetVector3()
     {
@@ -80,15 +59,17 @@ public class IfcCartesionPoint : Point
         }
         return new Vector3(Coordinates[0], Coordinates[1], Coordinates[2]);
     }
+}
 
-    public new string ToString()
+public class IfcCartesionPoint : Point
+{
+
+    public IfcCartesionPoint(uint id, string line)
     {
-        string toRet = "ID: # " + Id + ": IfcCartesionPoint(";
-        foreach (var c in Coordinates)
-        {
-            toRet += c + (c == Coordinates[Coordinates.Count - 1] ? ")" : ", ");
-        }
-        return toRet;
+        Id = id;
+        var begin = line.IndexOf('(') + 2;
+        var length = line.Length - 3 - begin;
+        Coordinates = ParseHelpers.StringToFloatArr(line.Substring(begin, length)).ToList();
     }
 }
 #endregion
@@ -96,30 +77,20 @@ public class IfcCartesionPoint : Point
 #region Loop
 public abstract class IfcLoop : IfcTopologicalRepresentationItem
 {
+    public List<uint> PointRefs;
 }
 
 public class IfcPolyLoop : IfcLoop
 {
-    public List<Point> Points;
 
     public IfcPolyLoop(uint id, string line)
     {
         Id = id;
-        Points = new List<Point>();
+        PointRefs = new List<uint>();
         foreach (var vId in ParseHelpers.GetValueIds(line, "(("))
         {
-            Points.Add(BIM_Parser.GetItem<Point>(vId));
+            PointRefs.Add(vId);
         }
-    }
-
-    public new string ToString()
-    {
-        string toRet = "ID: #" + Id + ": IfcPolyLoop(";
-        foreach (var p in Points)
-        {
-            toRet += p + (p == Points[Points.Count - 1] ? ")" : ", ");
-        }
-        return toRet;
     }
 }
 #endregion
@@ -127,24 +98,18 @@ public class IfcPolyLoop : IfcLoop
 #region Face Bound
 public abstract class IfcFaceBound : IfcTopologicalRepresentationItem
 {
+    public uint LoopRef;
+    public bool Orientation;
 }
 
 public class IfcFaceOuterBound : IfcFaceBound
 {
-    public IfcLoop Loop;
-    public bool Orientation;
-
     public IfcFaceOuterBound(uint id, string line)
     {
         Id = id;
         var values = ParseHelpers.GetValues(line, "(");
-        Loop = BIM_Parser.GetItem<IfcLoop>(ParseHelpers.GetValueId(values[0]));
+        LoopRef = ParseHelpers.GetValueId(values[0]);
         Orientation = values[1].Contains("T");
-    }
-
-    public new string ToString()
-    {
-        return "ID: #" + Id + ": IfcFaceOuterBound(" + Loop + ", " + Orientation + ")";
     }
 }
 #endregion
@@ -152,18 +117,13 @@ public class IfcFaceOuterBound : IfcFaceBound
 #region Face
 public class IfcFace : IfcTopologicalRepresentationItem
 {
-    public IfcFaceBound FaceBound;
+    public uint FaceBoundRef;
 
     public IfcFace(uint id, string line)
     {
         Id = id;
         var vIds = ParseHelpers.GetValueIds(line, "((");
-        FaceBound = BIM_Parser.GetItem<IfcFaceBound>(vIds[0]);
-    }
-
-    public new string ToString()
-    {
-        return "ID: #" + Id + ": IfcFaceOuterBound(" + FaceBound + ")";
+        FaceBoundRef = vIds[0];
     }
 }
 #endregion
@@ -171,30 +131,53 @@ public class IfcFace : IfcTopologicalRepresentationItem
 #region Connected Face Set
 public abstract class IfcConnectedFaceSet : IfcTopologicalRepresentationItem
 {
+    public List<uint> FaceRefs;
+
+    public List<Vector3> GetVertices(BIM_Generator generator)
+    {
+        List<Vector3> verts = new List<Vector3>();
+        foreach (var fRef in FaceRefs)
+        {
+            var face = generator.GetItem<IfcFace>(fRef);
+            var faceBound = generator.GetItem<IfcFaceOuterBound>(face.FaceBoundRef);
+            var loop = generator.GetItem<IfcPolyLoop>(faceBound.LoopRef);
+            var points = generator.GetItems<IfcCartesionPoint>(loop.PointRefs);
+            foreach (var p in points)
+            {
+                verts.Add(p.GetVector3());
+            }
+        }
+        return verts;
+    }
+
+    public List<int> GetIndices(BIM_Generator generator)
+    {
+        List<int> indices = new List<int>();
+        foreach (var fRef in FaceRefs)
+        {
+            var face = generator.GetItem<IfcFace>(fRef);
+            var faceBound = generator.GetItem<IfcFaceOuterBound>(face.FaceBoundRef);
+            var loop = generator.GetItem<IfcPolyLoop>(faceBound.LoopRef);
+            var points = generator.GetItems<IfcCartesionPoint>(loop.PointRefs);
+            foreach (var p in points)
+            {
+                indices.Add(indices.Count);
+            }
+        }
+        return indices;
+    }
 }
 
-public class IfcClosedShell : IfcTopologicalRepresentationItem
+public class IfcClosedShell : IfcConnectedFaceSet
 {
-    public List<IfcFace> Faces;
-
     public IfcClosedShell(uint id, string line)
     {
         Id = id;
-        Faces = new List<IfcFace>();
+        FaceRefs = new List<uint>();
         foreach (var vId in ParseHelpers.GetValueIds(line, "(("))
         {
-            Faces.Add(BIM_Parser.GetItem<IfcFace>(vId));
+            FaceRefs.Add(vId);
         }
-    }
-
-    public new string ToString()
-    {
-        string toRet = "ID: #" + Id + ": IfcFaceOuterBound(";
-        foreach (var face in Faces)
-        {
-            toRet += face + (face == Faces[Faces.Count - 1] ? ")" : ", ");
-        }
-        return toRet;
     }
 }
 #endregion
