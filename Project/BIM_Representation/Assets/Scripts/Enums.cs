@@ -1,4 +1,5 @@
-﻿public enum IfcSectionTypes
+﻿/*
+public enum IfcSectionTypes
 {
     Header,
     Data,
@@ -15,3 +16,4 @@ public enum IfcTopologicalRepresentationItems
     IfcClosedShell,
     Null
 }
+*/

@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine.Playables;
 
+/*
 public class BIM_Parser
 {
     public const string SupportedEncoding = "ISO-10303-21";
@@ -338,3 +339,4 @@ public class BIM_Parser
     //    return IfcSectionTypes.Null;
     //}
 }
+*/

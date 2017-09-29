@@ -189,7 +189,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1037275723
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -201,9 +201,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 595feabfbdfd381419d539764e8d3761, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FilePath: E:\School\3DAE4\Semester 5\Graduation Work\BIM\2011-09-14-Duplex-IFC\Duplex_A_20110907.ifc
-  DefaultMaterial: {fileID: 2100000, guid: 4329675cb15f23041bdf93607635f7f3, type: 2}
-  BatchSize: 1000
 --- !u!4 &1037275724
 Transform:
   m_ObjectHideFlags: 0
@@ -223,14 +220,54 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1037275722}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 595feabfbdfd381419d539764e8d3761, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FilePath: E:\School\3DAE4\Semester 5\Graduation Work\BIM\2011-09-14-Duplex-IFC\Duplex_MEP_20110907.ifc
-  DefaultMaterial: {fileID: 2100000, guid: 4329675cb15f23041bdf93607635f7f3, type: 2}
+--- !u!1 &1780743214
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1780743216}
+  - component: {fileID: 1780743215}
+  m_Layer: 0
+  m_Name: Generator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1780743215
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1780743214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b06ec8a3b00fd74aa47cb1eab786ab2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Files:
+  - E:\School\3DAE4\Semester 5\Graduation Work\TestFiles\SimpleBrepModel.ifc
   BatchSize: 1000
+--- !u!4 &1780743216
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1780743214}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2062088700
 GameObject:
   m_ObjectHideFlags: 0

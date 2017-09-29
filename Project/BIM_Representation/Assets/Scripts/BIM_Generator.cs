@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class BIM_Generator : MonoBehaviour
 {
-    public string FilePath;
+    /*public string FilePath;
     public Material DefaultMaterial;
     public uint BatchSize = 500;
 
@@ -110,4 +111,5 @@ public class BIM_Generator : MonoBehaviour
         }
         return items;
     }
+    */
 }
