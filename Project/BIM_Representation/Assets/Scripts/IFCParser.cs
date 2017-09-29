@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 public class IFCParser
@@ -16,9 +17,6 @@ public class IFCParser
     private string _filePath;
     private bool _isEof = false;
     private bool _isValid = false;
-    private bool _isFirstDataLine = true;
-
-    private int _propertyStartOffset;
 
     #region Constructor
     public IFCParser(string filePath)
@@ -136,7 +134,7 @@ public class IFCParser
         var schema = line.Substring(start, length);
         if (!Array.Exists(SupportedSchemas, elem => elem == schema))
         {
-            Debug.LogError(_filePath + ": Schema not supported! (" + schema + ")\nSupported Schemas: " + ArrayToString(SupportedSchemas));
+            Debug.LogError(_filePath + ": Schema not supported! (" + schema + ")\nSupported Schemas: " + Helpers.ArrayToString(SupportedSchemas));
             return false;
         }
         return true;
@@ -157,20 +155,31 @@ public class IFCParser
     #endregion
 
     #region Data
-    public void ReadDataLine()
+    public List<IFCEntity> ReadData(uint batchSize)
     {
-        var line = GetLine();
+        List<IFCEntity> toRet = new List<IFCEntity>();
+        while (!_isEof)
+        {
+            var line = GetLine();
+            if (line == "ENDSEC") break;
+            toRet.Add(ReadDataLine(line));
+        }
+        return toRet;
+    }
+
+    private IFCEntity ReadDataLine(string line)
+    {
         // Format:
         // #ID=ENTITY(PROPERTY,PROPERTY,...)
-        // When reading first line, define format (Possibly spaces between = and Property
-        if (_isFirstDataLine)
-        {
-            _propertyStartOffset = 1;
-            if (line.IndexOf("= ") != -1)
-                _propertyStartOffset = 2;
-        }
-        var id = line.Substring(1, line.IndexOf('='));
-
+        var equalsIdx = line.IndexOf('=');
+        var bracketsIdx = line.IndexOf('(');
+        // - Id
+        var id = uint.Parse(line.Substring(1, equalsIdx - 1));
+        // - Entity
+        var entity = Helpers.GetEntityType(line.Substring(equalsIdx + 1, bracketsIdx - (equalsIdx + 1)));
+        // - List of properties
+        var propertiesStr = line.Substring(bracketsIdx + 1, line.Length - 1 - (bracketsIdx + 1));
+        return new IFCEntity(id, entity, propertiesStr, ',');
     }
     #endregion
 
@@ -249,15 +258,6 @@ public class IFCParser
             prevChar = c;
         }
         return line;
-
-        //do
-        //{
-        //    line = _sr.ReadBlock()
-        //    line = _sr.ReadLine();
-        //} while (string.IsNullOrEmpty(line) || IsComment(line, ref isBlock));
-
-        // Trim ; at end
-        //return line.TrimEnd(';');
     }
 
     private bool IsComment(string line, ref bool isBlock)
@@ -288,24 +288,17 @@ public class IFCParser
         // Not a comment
         return false;
     }
-
-    private string ArrayToString<T>(T[] array, char delim = ',')
-    {
-        string toRet = "";
-        for (int i = 0; i < array.Length; ++i)
-        {
-            toRet += array[i];
-            if (i < array.Length - 1)
-                toRet += delim;
-        }
-        return toRet;
-    }
     #endregion
 
     #region Getters
     public bool IsValid()
     {
         return _isValid;
+    }
+
+    public bool IsEof()
+    {
+        return _isEof;
     }
     #endregion
 }
