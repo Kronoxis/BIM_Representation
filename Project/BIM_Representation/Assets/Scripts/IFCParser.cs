@@ -10,13 +10,18 @@ public class IFCParser
     // Properties
     public static readonly string SupportedExtension = ".ifc";
     public static readonly string SupportedISO = "ISO-10303-21";
-    public static readonly string[] SupportedSchemas = {"IFC2X3", "IFC4"};
+    public static readonly string[] SupportedSchemas = { "IFC2X3", "IFC4" };
 
     // Private Variables
     private StreamReader _sr;
     private string _filePath;
     private bool _isEof = false;
     private bool _isValid = false;
+
+    private int _parsedLineCount = 0;
+
+    private static IEnumerable<Type> _entityTypeClasses = typeof(IFCEntity).Assembly.GetTypes()
+        .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(IFCEntity)));
 
     #region Constructor
     public IFCParser(string filePath)
@@ -155,16 +160,20 @@ public class IFCParser
     #endregion
 
     #region Data
-    public List<IFCEntity> ReadData(uint batchSize)
+    public IEnumerator ReadDataBatch(uint batchSize, Action<IFCEntity> readLine)
     {
-        List<IFCEntity> toRet = new List<IFCEntity>();
         while (!_isEof)
         {
             var line = GetLine();
             if (line == "ENDSEC") break;
-            toRet.Add(ReadDataLine(line));
+            readLine(ReadDataLine(line));
+            ++_parsedLineCount;
+            if (_parsedLineCount % batchSize == 0)
+            {
+                yield return 0;
+            }
         }
-        return toRet;
+        _isEof = true;
     }
 
     private IFCEntity ReadDataLine(string line)
@@ -176,10 +185,27 @@ public class IFCParser
         // - Id
         var id = uint.Parse(line.Substring(1, equalsIdx - 1));
         // - Entity
-        var entity = Helpers.GetEntityType(line.Substring(equalsIdx + 1, bracketsIdx - (equalsIdx + 1)));
+        var entityType = Helpers.GetEntityType(line.Substring(equalsIdx + 1, bracketsIdx - (equalsIdx + 1)));
         // - List of properties
         var propertiesStr = line.Substring(bracketsIdx + 1, line.Length - 1 - (bracketsIdx + 1));
-        return new IFCEntity(id, entity, propertiesStr, ',');
+
+        // Create Entity
+        var e = new IFCEntity(id, entityType, propertiesStr, ',');
+
+        // Find matching class
+        var matches = _entityTypeClasses
+            .Where(t => entityType.ToString().ToUpper()
+                        .Equals(t.ToString().ToUpper())).ToList();
+        if (matches.Count < 1)
+        {
+            //Debug.LogWarning("IFCParser.ReadDataLine() > Specified Type has no matching Class!");
+            return e;
+        }
+
+        // Create a derived class with data from the Entity
+        var type = matches[0];
+        var inst = Convert.ChangeType(Activator.CreateInstance(type, e), type);
+        return (IFCEntity) inst;
     }
     #endregion
 
@@ -200,7 +226,7 @@ public class IFCParser
         while (_sr.Peek() != -1)
         {
             // Read next character
-            char c = (char) _sr.Read();
+            char c = (char)_sr.Read();
 
             // Remove comments
             // Single Line Start
@@ -239,20 +265,20 @@ public class IFCParser
             {
                 isString = !isString;
             }
-            
+
             // Remove space/newline/carriage/tab, unless string
-            if (!isString && (c == ' ' || c == '\n' || c == '\r' || c == '\t')) 
+            if (!isString && (c == ' ' || c == '\n' || c == '\r' || c == '\t'))
             {
                 prevChar = c;
                 continue;
             }
-            
+
             // Delimiter marks end of line (Unlessp art of string)
             if (!isString && c == delim)
             {
                 break;
             }
-            
+
             // Add char to list
             line += c;
             prevChar = c;
@@ -299,6 +325,11 @@ public class IFCParser
     public bool IsEof()
     {
         return _isEof;
+    }
+
+    public int GetParsedLineCount()
+    {
+        return _parsedLineCount;
     }
     #endregion
 }
