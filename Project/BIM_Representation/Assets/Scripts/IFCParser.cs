@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 
 public class IFCParser
@@ -19,9 +20,7 @@ public class IFCParser
     private bool _isValid = false;
 
     private int _parsedLineCount = 0;
-
-    private static IEnumerable<Type> _entityTypeClasses = typeof(IFCEntity).Assembly.GetTypes()
-        .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(IFCEntity)));
+    private uint _batchSize = 500;
 
     #region Constructor
     public IFCParser(string filePath)
@@ -160,7 +159,7 @@ public class IFCParser
     #endregion
 
     #region Data
-    public IEnumerator ReadDataBatch(uint batchSize, Action<IFCEntity> readLine)
+    public IEnumerator ReadDataBatch(Action<IFCEntity> readLine)
     {
         while (!_isEof)
         {
@@ -168,7 +167,7 @@ public class IFCParser
             if (line == "ENDSEC") break;
             readLine(ReadDataLine(line));
             ++_parsedLineCount;
-            if (_parsedLineCount % batchSize == 0)
+            if (_parsedLineCount % _batchSize == 0)
             {
                 yield return 0;
             }
@@ -191,28 +190,16 @@ public class IFCParser
 
         // Create Entity
         var e = new IFCEntity(id, entityType, propertiesStr, ',');
-
-        // Find matching class
-        var matches = _entityTypeClasses
-            .Where(t => entityType.ToString().ToUpper()
-                        .Equals(t.ToString().ToUpper())).ToList();
-        if (matches.Count < 1)
-        {
-            //Debug.LogWarning("IFCParser.ReadDataLine() > Specified Type has no matching Class!");
-            return e;
-        }
-
-        // Create a derived class with data from the Entity
-        var type = matches[0];
-        var inst = Convert.ChangeType(Activator.CreateInstance(type, e), type);
-        return (IFCEntity) inst;
+        var inst = Convert.ChangeType(Activator.CreateInstance(entityType, e), entityType);
+        return (IFCEntity)inst;
     }
     #endregion
 
     #region Helpers
     private string GetLine(char delim = ';')
     {
-        string line = "";
+        //string line = "";
+        StringBuilder line = new StringBuilder();
 
         // Don't get line when end of file
         _isEof = _sr.EndOfStream;
@@ -233,7 +220,7 @@ public class IFCParser
             if (!isComment && prevChar == '/' && c == '/')
             {
                 isComment = true;
-                line = line.Remove(line.Length - 1);
+                line.Remove(line.Length - 1, 1);
                 prevChar = c;
                 continue;
             }
@@ -248,7 +235,7 @@ public class IFCParser
             if (!isCommentBlock && prevChar == '/' && c == '*')
             {
                 isCommentBlock = true;
-                line = line.Remove(line.Length - 1);
+                line.Remove(line.Length - 1, 1);
                 prevChar = c;
                 continue;
             }
@@ -280,39 +267,10 @@ public class IFCParser
             }
 
             // Add char to list
-            line += c;
+            line.Append(c);
             prevChar = c;
         }
-        return line;
-    }
-
-    private bool IsComment(string line, ref bool isBlock)
-    {
-        // Single line
-        if (line.IndexOf("//") != -1)
-        {
-            return true;
-        }
-
-        // In comment block
-        if (isBlock)
-        {
-            // Line ends with */
-            if (line.LastIndexOf("*/") != -1)
-                isBlock = false;
-            return true;
-        }
-
-        // Comment block
-        if (line.IndexOf("/*") != -1)
-        {
-            if (line.LastIndexOf("*/") == -1)
-                isBlock = true;
-            return true;
-        }
-
-        // Not a comment
-        return false;
+        return line.ToString();
     }
     #endregion
 
@@ -330,6 +288,13 @@ public class IFCParser
     public int GetParsedLineCount()
     {
         return _parsedLineCount;
+    }
+    #endregion
+
+    #region Setters
+    public void SetBatchSize(uint batchSize)
+    {
+        _batchSize = batchSize;
     }
     #endregion
 }

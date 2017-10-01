@@ -1,84 +1,83 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using UnityEngine;
+using System.Text;
 
 public static class Helpers
 {
+    private static IEnumerable<Type> _entityTypes = typeof(IFCEntity).Assembly.GetTypes()
+        .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(IFCEntity)));
+
+    private static Dictionary<string, Type> _entityTypesMap = new Dictionary<string, Type>();
+
     public static string ArrayToString<T>(T[] array, char delim = ',')
     {
-        string toRet = "";
+        StringBuilder toRet = new StringBuilder();
         for (int i = 0; i < array.Length; ++i)
         {
-            toRet += array[i];
+            toRet.Append(array[i]);
             if (i < array.Length - 1)
-                toRet += delim;
+                toRet.Append(delim);
         }
-        return toRet;
+        return toRet.ToString();
     }
 
     public static string ListToString<T>(List<T> list, char delim = ',')
     {
-        string toRet = "";
-        for (int i = 0; i < list.Count; ++i)
-        {
-            toRet += list[i];
-            if (i < list.Count - 1)
-                toRet += delim;
-        }
-        return toRet;
+        return ArrayToString(list.ToArray(), delim);
     }
 
-    public static IFCEntityTypes GetEntityType(string s)
+    public static Type GetEntityType(string s)
     {
-        var entityTypes = Enum.GetValues(typeof(IFCEntityTypes)).Cast<IFCEntityTypes>().ToList();
-        foreach (var type in entityTypes)
-        {
-            if (s.ToUpper().Equals(type.ToString().ToUpper()))
-            {
-                return type;
-            }
-        }
-        return IFCEntityTypes.NULL;
+        if (!_entityTypesMap.ContainsKey(s))
+            _entityTypesMap[s] = FindMatchingType(s);
+        return _entityTypesMap[s];
+    }
+
+    private static Type FindMatchingType(string s)
+    {
+        var matches = _entityTypes.Where(t => t.ToString().ToUpper().Equals(s.ToUpper())).ToArray();
+        if (matches.Length < 1) return typeof(IFCEntity);
+        return matches[0];
     }
 
     #region Delegate Conversions
-
-    public static uint FuncToUint(string s)
+    public static uint PropertyToId(string s)
     {
+        if (s == "$" || s == "*") return 0;
         return uint.Parse(s.Substring(1));
     }
-    public delegate uint DelToUint(string s);
-    public static Func<string, uint> ConvertToUint = FuncToUint;
 
-    public static int FuncToInt(string s)
+    public static int PropertyToInt(string s)
     {
+        if (s == "$" || s == "*") return 0;
         return int.Parse(s);
     }
-    public delegate int DelToInt(string s);
-    public static Func<string, int> ConvertToInt = FuncToInt;
 
-    public static float FuncToFloat(string s)
+    public static float PropertyToFloat(string s)
     {
+        if (s == "$" || s == "*") return 0;
         return float.Parse(s);
     }
-    public delegate float DelToFloat(string s);
-    public static Func<string, float> ConvertToFloat = FuncToFloat;
 
-    public static bool FuncToBool(string s)
+    public static bool PropertyToBool(string s)
     {
+        if (s == "$" || s == "*") return false;
         return s == ".T.";
     }
-    public delegate bool DelToBool(string s);
-    public static Func<string, bool> ConvertToBool = FuncToBool;
 
-    public static string FuncToString(string s)
+    public static string PropertyToString(string s)
     {
+        if (s == "$" || s == "*") return "";
         return s;
     }
-    public delegate string DelToString(string s);
-    public static Func<string, string> ConvertToString = FuncToString;
+
+    public static T PropertyToEnum<T>(string s) where T : IConvertible
+    {
+        if (s == "$") return default(T);
+        var matches = Enum.GetValues(typeof(T)).Cast<T>().Where(e => s.Substring(1, s.Length - 2).ToUpper().Equals(e.ToString().ToUpper())).ToArray();
+        if (matches.Length < 1) return default(T);
+        return matches[0];
+    }
     #endregion
 }

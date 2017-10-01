@@ -20,17 +20,17 @@ public class IFCDataContainer
 
         // Check if the parser and file are valid
         if (!_parser.IsValid()) return;
-        Debug.Log(filePath + ": Valid! Let's parse!");
 
         // Parse and save data, close when done
-        CoroutineManager.Instance().CreateCoroutine(GetData(batchSize));
+        _parser.SetBatchSize(batchSize);
+        CoroutineManager.Instance().BeginCoroutine(GetData());
     }
 
-    private IEnumerator GetData(uint batchSize)
+    private IEnumerator GetData()
     {
         // Parse and save data
         List<IFCEntity> items = new List<IFCEntity>();
-        CoroutineManager.Instance().CreateCoroutine(_parser.ReadDataBatch(batchSize, e => items.Add(e)));
+        CoroutineManager.Instance().BeginCoroutine(_parser.ReadDataBatch(e => items.Add(e)));
         while (!_parser.IsEof()) yield return 0;
 
         // Sort data
@@ -99,5 +99,11 @@ public class IFCDataContainer
         }
 
         return toRet;
+    }
+
+    public void SetBatchSize(uint batchSize)
+    {
+        if (_parser != null)
+            _parser.SetBatchSize(batchSize);
     }
 }
