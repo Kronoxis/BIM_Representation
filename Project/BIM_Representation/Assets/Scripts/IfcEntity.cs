@@ -121,6 +121,13 @@ public enum IFCGeometricProjectionEnum
     NOTDEFINED
 }
 
+public enum IFCElementCompositionEnum
+{
+    COMPLEX,
+    ELEMENT,
+    PARTIAL
+}
+
 //public enum IFCPropertyTypes
 //{
 //    INTEGER,
@@ -226,6 +233,26 @@ public class IFCProperties
 #region IFCEntity
 public class IFCEntity
 {
+    private static IEnumerable<Type> _entityTypes = typeof(IFCEntity).Assembly.GetTypes()
+        .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(IFCEntity)));
+
+    private static Dictionary<string, Type> _entityTypesMap = new Dictionary<string, Type>();
+
+    public static Type GetEntityType(string s)
+    {
+        if (!_entityTypesMap.ContainsKey(s))
+            _entityTypesMap[s] = FindMatchingType(s);
+        return _entityTypesMap[s];
+    }
+
+    private static Type FindMatchingType(string s)
+    {
+        var matches = _entityTypes.Where(t => t.ToString().ToUpper().Equals(s.ToUpper())).ToArray();
+        if (matches.Length < 1) return typeof(IFCEntity);
+        return matches[0];
+    }
+
+    public string File;
     public uint Id;
     public Type EntityType;
     public IFCProperties Properties;
@@ -236,25 +263,28 @@ public class IFCEntity
     #region Constructors
     public IFCEntity()
     {
+        File = null;
         Id = 0;
         EntityType = null;
         Properties = null;
     }
 
-    public IFCEntity(uint id, Type type, string propertiesStr, char delim)
+    public IFCEntity(IFCEntity e)
     {
+        File = e.File;
+        Id = e.Id;
+        EntityType = e.EntityType;
+        Properties = e.Properties;
+    }
+
+    public IFCEntity(string file, uint id, Type type, string propertiesStr, char delim)
+    {
+        File = file;
         Id = id;
         EntityType = type;
         List<char> buffer = new List<char>();
         buffer.AddRange(propertiesStr.ToCharArray());
         Properties = ParseProperties(buffer, delim);
-    }
-
-    public IFCEntity(IFCEntity e)
-    {
-        Id = e.Id;
-        EntityType = e.EntityType;
-        Properties = e.Properties;
     }
     #endregion
 
@@ -266,6 +296,7 @@ public class IFCEntity
 
     protected void SetVariables(IFCEntity e)
     {
+        File = e.File;
         Id = e.Id;
         EntityType = e.EntityType;
         Properties = e.Properties;
@@ -287,6 +318,21 @@ public class IFCEntity
             return typeof(IFCEntity);
         }
         return matches[0].Value;
+    }
+
+    public T GetReference<T>(string name) where T : IFCEntity
+    {
+        return IFCDataManager.GetDataContainer(File).GetEntity<T>(GetIdProperty(name));
+    }
+
+    public T GetReference<T>(string[] names) where T : IFCEntity
+    {
+        IFCEntity toRet = this;
+        foreach (var name in names)
+        {
+            toRet = toRet.GetReference<IFCEntity>(name);
+        }
+        return (T)toRet;
     }
 
     public uint GetIdProperty(string name)
@@ -416,9 +462,11 @@ public class IFCEntity
             // Shift buffer
             buffer.RemoveAt(0);
 
+
             // Brackets encapsulate a list of properties (= another IFCProperties variable)
             if (c == '(')
             {
+                property.Remove(0, property.Length);
                 toRet.AddProperty(ParseProperties(buffer, delim));
                 continue;
             }
@@ -452,7 +500,12 @@ public class IFCEntity
 }
 #endregion
 
-#region IFCPoint
+#region <IIFCPoint> IFCCartesianPoint | IFCPointOnCurve | IFCPointOnSurface
+/// <summary>
+/// <seealso cref="IFCCartesianPoint "/> |
+/// <seealso cref="IFCPointOnCurve "/> |
+/// <seealso cref="IFCPointOnSurface "/> |
+/// </summary>
 public abstract class IIFCPoint : IFCEntity
 {
     public Vector3 GetVector3()
@@ -462,9 +515,11 @@ public abstract class IIFCPoint : IFCEntity
     }
 }
 
+/// <summary>
+/// List(float) Coordinates |
+/// </summary>
 public class IFCCartesianPoint : IIFCPoint
 {
-    // 0:   Coordinates             List<float>
     public IFCCartesianPoint(IFCEntity e)
     {
         AddKey("Coordinates", typeof(List<float>));
@@ -473,11 +528,12 @@ public class IFCCartesianPoint : IIFCPoint
     }
 }
 
+/// <summary>
+/// uint BasisCruve |
+/// float PointParameter |
+/// </summary>
 public class IFCPointOnCurve : IIFCPoint
 {
-    // 0:   BasisCurve              uint
-    // 1:   PointParameter          float
-
     public IFCPointOnCurve(IFCEntity e)
     {
         AddKey("BasisCurve", typeof(uint));
@@ -487,12 +543,13 @@ public class IFCPointOnCurve : IIFCPoint
     }
 }
 
+/// <summary>
+/// uint BasisSurface |
+/// float PointParameterU |
+/// float PointParameterV |
+/// </summary>
 public class IFCPointOnSurface : IIFCPoint
 {
-    // 0:   BasisSurface            uint
-    // 1:   PointParameterU         float
-    // 2:   PointParameterV         float 
-
     public IFCPointOnSurface(IFCEntity e)
     {
         AddKey("BasisSurface", typeof(uint));
@@ -504,15 +561,19 @@ public class IFCPointOnSurface : IIFCPoint
 }
 #endregion
 
-#region IFCVertex
+#region <IIFCVertex> IFCVertexPoint
+/// <summary>
+/// <seealso cref="IFCVertexPoint "/> |
+/// </summary>
 public abstract class IIFCVertex : IFCEntity
 {
 }
 
+/// <summary>
+/// uint VertexGeometry |
+/// </summary>
 public class IFCVertexPoint : IIFCVertex
 {
-    // 0:   VertexGeometry          uint
-
     public IFCVertexPoint(IFCEntity e)
     {
         AddKey("VertexGeometry", typeof(uint));
@@ -522,15 +583,19 @@ public class IFCVertexPoint : IIFCVertex
 }
 #endregion
 
-#region IFCDirection
+#region <IIFCDirection> IFCDirection
+/// <summary>
+/// <seealso cref="IFCDirection "/>
+/// </summary>
 public abstract class IIFCDirection : IFCEntity
 {
 }
 
+/// <summary>
+/// List(float) DirectionRatios |
+/// </summary>
 public class IFCDirection : IIFCDirection
 {
-    // 0:   DirectionRatios         List<float>
-
     public IFCDirection(IFCEntity e)
     {
         AddKey("DirectionRatios", typeof(List<float>));
@@ -540,15 +605,21 @@ public class IFCDirection : IIFCDirection
 }
 #endregion
 
-#region IFCLoop
+#region <IIFCLoop> IFCPolyLoop | IFCVertexLoop | IFCEdgeLoop
+/// <summary>
+/// <seealso cref="IFCPolyLoop "/> | 
+/// <seealso cref="IFCVertexLoop "/> | 
+/// <seealso cref="IFCEdgeLoop "/> |
+/// </summary>
 public abstract class IIFCLoop : IFCEntity
 {
 }
 
+/// <summary>
+/// List(uint) Polygon |
+/// </summary>
 public class IFCPolyLoop : IIFCLoop
 {
-    // 0:   Polygon                 List<uint>
-
     public IFCPolyLoop(IFCEntity e)
     {
         AddKey("Polygon", typeof(List<uint>));
@@ -557,10 +628,11 @@ public class IFCPolyLoop : IIFCLoop
     }
 }
 
+/// <summary>
+/// uint LoopVertex |
+/// </summary>
 public class IFCVertexLoop : IIFCLoop
 {
-    // 0:   LoopVertex              uint
-
     public IFCVertexLoop(IFCEntity e)
     {
         AddKey("LoopVertex", typeof(uint));
@@ -569,10 +641,11 @@ public class IFCVertexLoop : IIFCLoop
     }
 }
 
+/// <summary>
+/// List(uint) EdgeList |
+/// </summary>
 public class IFCEdgeLoop : IIFCLoop
 {
-    // 0:   EdgeList                List<uint>
-
     public IFCEdgeLoop(IFCEntity e)
     {
         AddKey("EdgeList", typeof(List<uint>));
@@ -582,16 +655,21 @@ public class IFCEdgeLoop : IIFCLoop
 }
 #endregion
 
-#region IFCFaceBound
+#region <IIFCFaceBound> IFCFaceBound | IFCFaceOuterBound
+/// <summary>
+/// <seealso cref="IFCFaceBound "/> | 
+/// <seealso cref="IFCFaceOuterBound "/> |
+/// </summary>
 public abstract class IIFCFaceBound : IFCEntity
 {
 }
 
+/// <summary>
+/// uint Bound |
+/// bool Orientation |
+/// </summary>
 public class IFCFaceBound : IIFCFaceBound
 {
-    // 0:   Bound                   uint
-    // 1:   Orientation             bool
-
     public IFCFaceBound(IFCEntity e)
     {
         AddKey("Bound", typeof(uint)); ;
@@ -601,11 +679,12 @@ public class IFCFaceBound : IIFCFaceBound
     }
 }
 
+/// <summary>
+/// uint Bound |
+/// bool Orientation |
+/// </summary>
 public class IFCFaceOuterBound : IIFCFaceBound
 {
-    // 0:   Bound                   uint
-    // 1:   Orientation             bool
-
     public IFCFaceOuterBound(IFCEntity e)
     {
         AddKey("Bound", typeof(uint));
@@ -616,14 +695,20 @@ public class IFCFaceOuterBound : IIFCFaceBound
 }
 #endregion
 
-#region IFCFace
+#region <IIFCFace> IFCFace | IFCFaceSurface
+/// <summary>
+/// <seealso cref="IFCFace "/> | 
+/// <seealso cref="IFCFaceSurface "/> |
+/// </summary>
 public abstract class IIFCFace : IFCEntity
 {
 }
 
+/// <summary>
+/// List(uint) Bounds |
+/// </summary>
 public class IFCFace : IIFCFace
 {
-    // 0:   Bounds                  List<uint>
     public IFCFace(IFCEntity e)
     {
         AddKey("Bounds", typeof(List<uint>));
@@ -632,10 +717,12 @@ public class IFCFace : IIFCFace
     }
 }
 
+/// <summary>
+/// List(uint) Bounds | 
+/// bool SameSense |
+/// </summary>
 public class IFCFaceSurface : IIFCFace
 {
-    // 0:   Bounds                  List<uint>
-    // 1:   SameSense               bool
     public IFCFaceSurface(IFCEntity e)
     {
         AddKey("Bounds", typeof(List<uint>));
@@ -646,7 +733,11 @@ public class IFCFaceSurface : IIFCFace
 }
 #endregion
 
-#region IFCConnectedFaceSet
+#region <IIFCConnectedFaceSet> IFCClosedShell | IFCOpenShell
+/// <summary>
+/// <seealso cref="IFCClosedShell "/> | 
+/// <seealso cref="IFCOpenShell "/> |
+/// </summary>
 public abstract class IIFCConnectedFaceSet : IFCEntity
 {
     public void GetMeshFilterBuffers(IFCDataContainer container,
@@ -712,10 +803,11 @@ public abstract class IIFCConnectedFaceSet : IFCEntity
     }
 }
 
+/// <summary>
+/// List(uint) CfsFaces |
+/// </summary>
 public class IFCClosedShell : IIFCConnectedFaceSet
 {
-    // 0:   CfsFaces                List<uint>
-
     public IFCClosedShell(IFCEntity e)
     {
         AddKey("CfsFaces", typeof(List<uint>));
@@ -724,10 +816,11 @@ public class IFCClosedShell : IIFCConnectedFaceSet
     }
 }
 
+/// <summary>
+/// List(uint) CfsFaces |
+/// </summary>
 public class IFCOpenShell : IIFCConnectedFaceSet
 {
-    // 0:   CfsFaces                List<uint>
-
     public IFCOpenShell(IFCEntity e)
     {
         AddKey("CfsFaces", typeof(List<uint>));
@@ -737,19 +830,22 @@ public class IFCOpenShell : IIFCConnectedFaceSet
 }
 #endregion
 
-#region IFCNamedUnit
-
+#region <IIFCNamedUnit> IFCSIUnit
+/// <summary>
+/// <seealso cref="IFCSIUnit "/> |
+/// </summary>
 public abstract class IIFCNamedUnit : IFCEntity
 {
 }
 
+/// <summary>
+/// uint Dimensions |
+/// IFCUnitEnum UnitType |
+/// IFCSIPrefix Prefix |
+/// IFCSIUnitName Name |
+/// </summary>
 public class IFCSIUnit : IIFCNamedUnit
 {
-    // 0:   Dimensions              uint
-    // 1:   UnitType                IFCUnitEnum
-    // 2:   Prefix                  IFCSIPrefix
-    // 3:   Name                    IFCSIUnitName
-
     public IFCSIUnit(IFCEntity e)
     {
         AddKey("Dimensions", typeof(uint));
@@ -762,23 +858,27 @@ public class IFCSIUnit : IIFCNamedUnit
 }
 #endregion
 
-#region IFCBuildingElement
+#region <IIFCBuildingElement> IFCBuildingElementProxy
+/// <summary>
+/// <seealso cref="IFCBuildingElementProxy "/> |
+/// </summary>
 public abstract class IIFCBuildingElement : IFCEntity
 {
 }
 
+/// <summary>
+/// string GlobalId |               
+/// uint OwnerHistory |           
+/// string Name |                     
+/// string Description |             
+/// string ObjectType |             
+/// uint ObjectPlacement |      
+/// uint Representation |
+/// string Tag |
+/// IFCBuildingElementProxyTypeEnum PredefinedType |
+/// </summary>
 public class IFCBuildingElementProxy : IIFCBuildingElement
 {
-    // 0:   GlobalId                string
-    // 1:   OwnerHistory            uint
-    // 2:   Name                    string
-    // 3:   Description             string
-    // 4:   ObjectType              string
-    // 5:   ObjectPlacement         uint
-    // 6:   Representation          uint
-    // 7:   Tag                     string
-    // 8:   PredefinedType          IFCBuildingElementProxyTypeEnum
-
     public IFCBuildingElementProxy(IFCEntity e)
     {
         AddKey("GlobalId", typeof(string));
@@ -796,16 +896,20 @@ public class IFCBuildingElementProxy : IIFCBuildingElement
 }
 #endregion
 
-#region IFCObjectPlacement
+#region <IIFCObjectPlacement> IFCLocalPlacement
+/// <summary>
+/// <seealso cref="IFCLocalPlacement "/> |
+/// </summary>
 public abstract class IIFCObjectPlacement : IFCEntity
 {
 }
 
+/// <summary>
+/// uint PlacementRelTo |
+/// uint RelativePlacement |
+/// </summary>
 public class IFCLocalPlacement : IIFCObjectPlacement
 {
-    // 0:   PlacementRelTo          uint
-    // 1:   RelativePlacement       uint
-
     public IFCLocalPlacement(IFCEntity e)
     {
         AddKey("PlacementRelTo", typeof(uint));
@@ -816,16 +920,21 @@ public class IFCLocalPlacement : IIFCObjectPlacement
 }
 #endregion
 
-#region IFCPlacement
+#region <IIFCPlacement> IFCAxis2Placement2D | IFCAxis2Placement3D
+/// <summary>
+/// <seealso cref="IFCAxis2Placement2D "/> |
+/// <seealso cref="IFCAxis2Placement3D "/> |
+/// </summary>
 public abstract class IIFCPlacement : IFCEntity
 {
 }
 
+/// <summary>
+/// uint Location | 
+/// uint RefDirection |
+/// </summary>
 public class IFCAxis2Placement2D : IIFCPlacement
 {
-    // 0:   Location                uint
-    // 1:   RefDirection            uint
-
     public IFCAxis2Placement2D(IFCEntity e)
     {
         AddKey("Location", typeof(uint));
@@ -835,12 +944,13 @@ public class IFCAxis2Placement2D : IIFCPlacement
     }
 }
 
+/// <summary>
+/// uint Location |
+/// uint Axis |
+/// uint RefDirection |
+/// </summary>
 public class IFCAxis2Placement3D : IIFCPlacement
 {
-    // 0:   Location                uint
-    // 1:   Axis                    uint
-    // 2:   RefDirection            uint
-
     public IFCAxis2Placement3D(IFCEntity e)
     {
         AddKey("Location", typeof(uint));
@@ -852,20 +962,25 @@ public class IFCAxis2Placement3D : IIFCPlacement
 }
 #endregion
 
-#region IFCRepresentationContext
+#region <IIFCRepresentationContext> IFCGeometricRepresentationContext | IFCGeometricRepresentationSubContext
+/// <summary>
+/// <seealso cref="IFCGeometricRepresentationContext "/> |
+/// <seealso cref="IFCGeometricRepresentationSubContext "/> |
+/// </summary>
 public abstract class IIFCRepresentationContext : IFCEntity
 {
 }
 
+/// <summary>
+/// string ContextIdentifier | 
+/// string ContextType | 
+/// int CoordinateSpaceDimension | 
+/// float Precision | 
+/// uint WorldCoordinateSystem | 
+/// uint TrueNorth | 
+/// </summary>
 public class IFCGeometricRepresentationContext : IIFCRepresentationContext
 {
-    // 0:   ContextIdentifier           string
-    // 1:   ContextType                 string
-    // 2:   CoordinateSpaceDimension    int
-    // 3:   Precision                   float
-    // 4:   WorldCoordinateSystem       uint
-    // 5:   TrueNorth                   uint
-
     public IFCGeometricRepresentationContext(IFCEntity e)
     {
         AddKey("ContextIdentifier", typeof(string));
@@ -879,19 +994,20 @@ public class IFCGeometricRepresentationContext : IIFCRepresentationContext
     }
 }
 
+/// <summary>
+/// string ContextIdentifier | 
+/// string ContextType | 
+/// int CoordinateSpaceDimension | 
+/// float Precision | 
+/// uint WorldCoordinateSystem | 
+/// uint TrueNorth | 
+/// uint ParentContext | 
+/// float TargetScale | 
+/// IFCGeometricProjectionEnum TargetView | 
+/// string UserDefinedTargetView | 
+/// </summary>
 public class IFCGeometricRepresentationSubContext : IIFCRepresentationContext
 {
-    // 0:   ContextIdentifier           string
-    // 1:   ContextType                 string
-    // 2:   CoordinateSpaceDimension    int
-    // 3:   Precision                   float
-    // 4:   WorldCoordinateSystem       uint
-    // 5:   TrueNorth                   uint
-    // 6:   ParentContext               uint
-    // 7:   TargetScale                 float
-    // 8:   TargetView                  IFCGeometricProjectionEnum
-    // 9:   UserDefinedTargetView       string
-
     public IFCGeometricRepresentationSubContext(IFCEntity e)
     {
         AddKey("ContextIdentifier", typeof(string));
@@ -906,6 +1022,203 @@ public class IFCGeometricRepresentationSubContext : IIFCRepresentationContext
         AddKey("UserDefinedTargetView", typeof(string));
 
         SetVariables(e);
+    }
+}
+#endregion
+
+#region <IIFCRelConnects> IFCRelContainedInSpatialStructure
+/// <summary>
+/// <seealso cref="IFCRelContainedInSpatialStructure "/> |
+/// </summary>
+public abstract class IIFCRelConnects : IFCEntity
+{
+}
+
+/// <summary>
+/// string GlobalId | 
+/// uint OwnerHistory | 
+/// string Name | 
+/// string Description | 
+/// List(uint) RelatedElements | 
+/// List(uint) RelatingStructure | 
+/// </summary>
+public class IFCRelContainedInSpatialStructure : IIFCRelConnects
+{
+    public IFCRelContainedInSpatialStructure(IFCEntity e)
+    {
+        AddKey("GlobalId", typeof(string));
+        AddKey("OwnerHistory", typeof(uint));
+        AddKey("Name", typeof(string));
+        AddKey("Description", typeof(string));
+        AddKey("RelatedElements", typeof(List<uint>));
+        AddKey("RelatingStructure", typeof(List<uint>));
+
+        SetVariables(e);
+    }
+}
+#endregion
+
+#region <IIFCManifoldSolidBrep> IFCFacetedBrep
+/// <summary>
+/// <seealso cref="IFCFacetedBrep "/> | 
+/// </summary>
+public abstract class IIFCManifoldSolidBrep : IFCEntity
+{
+}
+
+/// <summary>
+/// uint Outer | 
+/// </summary>
+public class IFCFacetedBrep : IIFCManifoldSolidBrep
+{
+    public IFCFacetedBrep(IFCEntity e)
+    {
+        AddKey("Outer", typeof(uint));
+
+        SetVariables(e);
+    }
+}
+#endregion
+
+#region <IIFCShapeModel> IFCShapeRepresentation
+/// <summary>
+/// <seealso cref="IFCShapeRepresentation "/> |
+/// </summary>
+public abstract class IIFCShapeModel : IFCEntity
+{
+}
+
+/// <summary>
+/// uint ContextOfItems | 
+/// string RepresentationIdentifier | 
+/// string RepresentationType | 
+/// List(uint) Items | 
+/// </summary>
+public class IFCShapeRepresentation : IIFCShapeModel
+{
+    public IFCShapeRepresentation(IFCEntity e)
+    {
+        AddKey("ContextOfItems", typeof(uint));
+        AddKey("RepresentationIdentifier", typeof(string));
+        AddKey("RepresentationType", typeof(string));
+        AddKey("Items", typeof(List<uint>));
+
+        SetVariables(e);
+    }
+}
+#endregion
+
+#region <IIFCProductRepresentation> IFCProductDefinitionShape
+/// <summary>
+/// <seealso cref="IFCProductDefinitionShape "/> | 
+/// </summary>
+public abstract class IIFCProductRepresentation : IFCEntity
+{
+}
+
+/// <summary>
+/// string Name |
+/// string Description | 
+/// List(uint) Representations
+/// </summary>
+public class IFCProductDefinitionShape : IIFCProductRepresentation
+{
+    public IFCProductDefinitionShape(IFCEntity e)
+    {
+        AddKey("Name", typeof(string));
+        AddKey("Description", typeof(string));
+        AddKey("Representations", typeof(List<uint>));
+
+        SetVariables(e);
+    }
+}
+#endregion
+
+#region <IIFCRelDecomposes> IFCRelAggregates
+/// <summary>
+/// <seealso cref="IFCRelAggregates "/> | 
+/// </summary>
+public abstract class IIFCRelDecomposes : IFCEntity
+{
+}
+
+/// <summary>
+/// string GlobalId | 
+/// uint OwnerHistory | 
+/// string Name |
+/// string Description | 
+/// </summary>
+public class IFCRelAggregates : IIFCRelDecomposes
+{
+    public IFCRelAggregates(IFCEntity e)
+    {
+        AddKey("GlobalId", typeof(string));
+        AddKey("OwnerHistory", typeof(uint));
+        AddKey("Name", typeof(string));
+        AddKey("Description", typeof(string));
+
+        SetVariables(e);
+    }
+}
+#endregion
+
+#region <IIFCSpatialStructureElement> IFCBuilding
+/// <summary>
+/// <seealso cref="IFCBuilding "/> | 
+/// </summary>
+public abstract class IIFCSpatialStructureElement : IFCEntity
+{
+}
+
+/// <summary>
+/// string GlobalId | 
+/// uint OwnerHistory | 
+/// string Name | 
+/// string Description |  
+/// string ObjectType | 
+/// uint ObjectPlacement | 
+/// uint Representation | 
+/// string LongName | 
+/// IFCElementCompositionEnum CompositionType | 
+/// float ElevationOfRefHeight | 
+/// float ElevationOfTerrain | 
+/// uint BuildingAddress | 
+/// </summary>
+public class IFCBuilding : IIFCSpatialStructureElement
+{
+    public IFCBuilding(IFCEntity e)
+    {
+        AddKey("GlobalId", typeof(string));
+        AddKey("OwnerHistory", typeof(uint));
+        AddKey("Name", typeof(string));
+        AddKey("Description", typeof(string));
+        AddKey("ObjectType", typeof(string));
+        AddKey("ObjectPlacement", typeof(uint));
+        AddKey("Representation", typeof(uint));
+        AddKey("LongName", typeof(string));
+        AddKey("CompositionType", typeof(IFCElementCompositionEnum));
+        AddKey("ElevationOfRefHeight", typeof(float));
+        AddKey("ElevationOfTerrain", typeof(float));
+        AddKey("BuildingAddress", typeof(uint));
+
+        SetVariables(e);
+    }
+}
+#endregion
+
+#region IFCMeasureWithUnit
+/// <summary>
+/// List(float) ValueComponent |
+/// uint UnitComponent | 
+/// <para/>
+/// ValueComponent type is hacky! ValueType(v) -> (v) => IFCProperties (= List of properties)
+/// </summary>
+public class IFCMeasureWithUnit : IFCEntity
+{
+    public IFCMeasureWithUnit(IFCEntity e)
+    {
+        AddKey("ValueComponent", typeof(List<float>));
+        AddKey("UnitComponent", typeof(uint));
     }
 }
 #endregion

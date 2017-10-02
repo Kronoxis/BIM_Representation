@@ -7,6 +7,7 @@ using UnityEngine;
 
 public class IFCDataContainer
 {
+    private List<IFCEntity> _entities = new List<IFCEntity>();
     private ILookup<Type, IFCEntity> _entitiesByType;
     private ILookup<uint, IFCEntity> _entitiesById;
 
@@ -29,13 +30,13 @@ public class IFCDataContainer
     private IEnumerator GetData()
     {
         // Parse and save data
-        List<IFCEntity> items = new List<IFCEntity>();
-        CoroutineManager.Instance().BeginCoroutine(_parser.ReadDataBatch(e => items.Add(e)));
+        _entities = new List<IFCEntity>();
+        CoroutineManager.Instance().BeginCoroutine(_parser.ReadDataBatch(e => _entities.Add(e)));
         while (!_parser.IsEof()) yield return 0;
 
         // Sort data
-        _entitiesByType = items.ToLookup(item => item.GetType(), item => item);
-        _entitiesById = items.ToLookup(item => item.Id, item => item);
+        _entitiesByType = _entities.ToLookup(item => item.GetType(), item => item);
+        _entitiesById = _entities.ToLookup(item => item.Id, item => item);
 
         // Close the parser
         _parser.Close();

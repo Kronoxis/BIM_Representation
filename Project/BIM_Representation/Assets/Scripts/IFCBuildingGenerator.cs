@@ -9,12 +9,19 @@ using UnityEngine.UI;
 
 public class IFCBuildingGenerator : MonoBehaviour
 {
-    public List<string> Files = new List<string>();
+    [Header("Settings")]
+    [Tooltip("Add Files to Parse.\nRequires Full Path.\nIncrease the Size to add more files.")]
+    public List<string> Files = new List<string>(){""};
+    [Space(10)]
+    [Tooltip("Amount of lines to be parsed per frame.\nRecommend 500-2500.\nLower will reduce Parse speed, higher will freeze the Application.")]
     public uint BatchSize = 1000;
+
+    [Space(20)]
+    [Header("Object References")]
     public Material DefaultMaterial;
     public Text ParseProgress;
 
-    private List<IFCDataContainer> _dataContainers = new List<IFCDataContainer>();
+    //private List<IFCDataContainer> _dataContainers = new List<IFCDataContainer>();
 
     private bool _runInBackground;
     private bool _isGenerated = false;
@@ -34,54 +41,51 @@ public class IFCBuildingGenerator : MonoBehaviour
         foreach (var file in Files)
         {
             var container = new IFCDataContainer(file, (uint)((float)BatchSize / Files.Count));
-            _dataContainers.Add(container);
+            IFCDataManager.AddDataContainer(file, container);
             CoroutineManager.Instance().BeginCoroutine(CreateGeometry(container));
 
         }
-        CoroutineManager.Instance().BeginCoroutine(UpdateParseProgress(_dataContainers));
+        CoroutineManager.Instance().BeginCoroutine(UpdateParseProgress());
     }
 
     private void Update()
     {
         if (!_isGenerated && _prevBatchSize != BatchSize)
         {
-            _dataContainers.ForEach(c => c.SetBatchSize(BatchSize));
+            IFCDataManager.GetAllData().ForEach(c => c.SetBatchSize(BatchSize));
             _prevBatchSize = BatchSize;
         }
     }
 
-    private IEnumerator UpdateParseProgress(List<IFCDataContainer> containers)
+    private IEnumerator UpdateParseProgress()
     {
-        // File names (Info)
-        List<string> fileNames = new List<string>();
-        Files.ForEach(f => fileNames.Add(new FileInfo(f).Name));
-
-        var workingParserCount = GetWorkingParsersCount(containers);
-        var prevWorkingParserCount = workingParserCount;
-        while (workingParserCount > 0)
+        int wpc;
+        int prevWpc = IFCDataManager.GetWorkingParserCount();
+        while (IFCDataManager.IsParsing(out wpc))
         {
-            prevWorkingParserCount = workingParserCount;
             var totalLines = 0;
             // Clear text
             ParseProgress.text = "";
             // Update Parse Progress per parser
-            for (int i = 0; i < containers.Count; ++i)
+            foreach (var container in IFCDataManager.GetAllData())
             {
-                var container = containers[i];
                 // Update Batch Size
-                if (prevWorkingParserCount != workingParserCount)
-                    container.SetBatchSize((uint)(BatchSize / workingParserCount));
+                if (prevWpc != wpc)
+                {
+                    container.SetBatchSize((uint)(BatchSize / wpc));
+                    prevWpc = wpc;
+                }
                 // Completed text
                 if (container.IsParsed())
                 {
                     ParseProgress.text +=
-                        "[" + fileNames[i] + "]: Completed.\n";
+                        "[" + IFCDataManager.GetContainerFile(container) + "]: Completed.\n";
                 }
                 // Parse Progress text
                 else
                 {
                     ParseProgress.text +=
-                        "[" + fileNames[i] + "]: Parsed " + container.GetParsedLineCount() + " lines...\n";
+                        "[" + IFCDataManager.GetContainerFile(container) + "]: Parsed " + container.GetParsedLineCount() + " lines...\n";
                 }
                 totalLines += container.GetParsedLineCount();
             }
@@ -93,7 +97,6 @@ public class IFCBuildingGenerator : MonoBehaviour
             ParseProgress.text += "Average speed: " + (totalLines / elapsedSecs).ToString("0") + " lines/second.\n";
             // Wait for next frame
             yield return 0;
-            workingParserCount = GetWorkingParsersCount(containers);
         }
         // Hide progress text
         ParseProgress.enabled = false;
@@ -102,18 +105,30 @@ public class IFCBuildingGenerator : MonoBehaviour
         // Flag building generated
         _isGenerated = true;
     }
-
-    private int GetWorkingParsersCount(List<IFCDataContainer> containers)
-    {
-        return containers.Where(c => !c.IsParsed()).ToArray().Length;
-    }
-
+    
     private IEnumerator CreateGeometry(IFCDataContainer container)
     {
         // Wait until parsed
         while (!container.IsParsed()) yield return 0;
 
         // Calculate size
+        var scale = GetScale(container);
+
+        // Create Building
+        var building = CreateBuilding(container, scale);
+
+        // Create Building Elements
+        var buildingElements = CreateBuildingElements(container, building);
+
+        // Get Geometry Sets
+        var geometrySets = container.GetEntities<IIFCConnectedFaceSet>(true);
+
+        // Create meshes from geometry sets
+        CreateMeshes(geometrySets, container, building);
+    }
+
+    private float GetScale(IFCDataContainer container)
+    {
         float scale = 1;
         var units = container.GetEntities<IIFCNamedUnit>(true);
         var lengthUnits = units.Where(unit => unit.GetEnumProperty<IFCUnitEnum>("UnitType") == IFCUnitEnum.LENGTHUNIT).ToArray();
@@ -122,31 +137,51 @@ public class IFCBuildingGenerator : MonoBehaviour
             var pow = (int)lengthUnits[0].GetEnumProperty<IFCSIPrefix>("Prefix");
             scale = Mathf.Pow(10, pow);
         }
-
-        // Get Geometry Sets
-        var geometrySets = container.GetEntities<IIFCConnectedFaceSet>(true);
-
-        // Create meshes from geometry sets
-        CreateMeshes(geometrySets, container, scale);
+        return scale;
     }
 
-    private void CreateMeshes(List<IIFCConnectedFaceSet> geometrySets, IFCDataContainer container, float scale)
+    private GameObject CreateBuilding(IFCDataContainer container, float scale)
+    {
+        GameObject go = new GameObject();
+        var buildings = container.GetEntities<IFCBuilding>(false);
+        if (buildings.Count > 0)
+        {
+            var building = buildings[0];
+            go.name = building.GetStringProperty("Name") + " (" + building.GetStringProperty("GlobalId") + ")";
+            var location = building.GetReference<IFCCartesianPoint>(new [] {"ObjectPlacement", "RelativePlacement", "Location"});
+            go.transform.Translate(location.GetVector3());
+        }
+        else
+        {
+            go.name = "Missing IFCBuilding!";
+        }
+        // Resolve misaligned axis
+        go.transform.Rotate(new Vector3(-90, 0, 0));
+        // Set Scale
+        go.transform.localScale = new Vector3(scale, scale, scale);
+        return go;
+    }
+
+    private List<GameObject> CreateBuildingElements(IFCDataContainer container, GameObject parent)
+    {
+        List<GameObject> gos = new List<GameObject>();
+        GameObject go = new GameObject();
+        var elements = container.GetEntities<IIFCBuildingElement>(true);
+        return gos;
+    }
+
+    private void CreateMeshes(List<IIFCConnectedFaceSet> geometrySets, IFCDataContainer container, GameObject parent)
     {
         foreach (var geometrySet in geometrySets)
-            CreateMesh(geometrySet, container, scale);
+            CreateMesh(geometrySet, container, parent);
     }
 
-    private void CreateMesh(IIFCConnectedFaceSet geometrySet, IFCDataContainer container, float scale)
+    private void CreateMesh(IIFCConnectedFaceSet geometrySet, IFCDataContainer container, GameObject parent)
     {
         // Create GameObject
         var go = new GameObject();
+        go.transform.SetParent(parent.transform, false);
         go.name = geometrySet.Id.ToString();
-        // Resolve misaligned axis
-        go.transform.Rotate(new Vector3(-90, 0, 0));
-        // Set Position
-        // Set Rotation
-        // Set Scale
-        go.transform.localScale = new Vector3(scale, scale, scale);
 
         // Add Mesh Filter
         var mf = go.AddComponent<MeshFilter>();

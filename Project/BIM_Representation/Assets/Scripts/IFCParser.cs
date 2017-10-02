@@ -184,12 +184,12 @@ public class IFCParser
         // - Id
         var id = uint.Parse(line.Substring(1, equalsIdx - 1));
         // - Entity
-        var entityType = Helpers.GetEntityType(line.Substring(equalsIdx + 1, bracketsIdx - (equalsIdx + 1)));
+        var entityType = IFCEntity.GetEntityType(line.Substring(equalsIdx + 1, bracketsIdx - (equalsIdx + 1)));
         // - List of properties
         var propertiesStr = line.Substring(bracketsIdx + 1, line.Length - 1 - (bracketsIdx + 1));
 
         // Create Entity
-        var e = new IFCEntity(id, entityType, propertiesStr, ',');
+        var e = new IFCEntity(_filePath, id, entityType, propertiesStr, ',');
         var inst = Convert.ChangeType(Activator.CreateInstance(entityType, e), entityType);
         return (IFCEntity)inst;
     }
