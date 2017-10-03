@@ -15,19 +15,20 @@ public class IFCParser
 
     // Private Variables
     private StreamReader _sr;
-    private string _filePath;
+    private FileInfo _file;
     private bool _isEof = false;
     private bool _isValid = false;
 
     private int _parsedLineCount = 0;
     private uint _batchSize = 500;
+    private int _parsedCharCount = 0;
 
     #region Constructor
-    public IFCParser(string filePath)
+    public IFCParser(FileInfo file)
     {
-        _filePath = filePath;
+        _file = file;
         if (!CheckExtension()) return;
-        _sr = new StreamReader(filePath);
+        _sr = new StreamReader(file.FullName);
         if (!CheckISO()) return;
         if (!CheckHeader()) return;
         if (!CheckData()) return;
@@ -50,9 +51,9 @@ public class IFCParser
     #region Checks
     private bool CheckExtension()
     {
-        if (SupportedExtension != new FileInfo(_filePath).Extension)
+        if (SupportedExtension != _file.Extension)
         {
-            Debug.LogError(_filePath + ": Invalid Extension! Expected " + SupportedExtension);
+            Debug.LogError(_file.FullName + ": Invalid Extension! Expected " + SupportedExtension);
             return false;
         }
         return true;
@@ -70,7 +71,7 @@ public class IFCParser
         var line = GetLine();
         if (line != "HEADER")
         {
-            Debug.LogError(_filePath + ": Header Invalid! (Section not opened)");
+            Debug.LogError(_file.FullName + ": Header Invalid! (Section not opened)");
             return false;
         }
 
@@ -97,19 +98,19 @@ public class IFCParser
 
         if (!hasDescription)
         {
-            Debug.LogError(_filePath + ": File Description missing!");
+            Debug.LogError(_file.FullName + ": File Description missing!");
             return false;
         }
 
         if (!hasName)
         {
-            Debug.LogError(_filePath + ": File Name missing!");
+            Debug.LogError(_file.FullName + ": File Name missing!");
             return false;
         }
 
         if (!hasSchema)
         {
-            Debug.LogError(_filePath + ": File Schema missing!");
+            Debug.LogError(_file.FullName + ": File Schema missing!");
             return false;
         }
 
@@ -123,7 +124,7 @@ public class IFCParser
         line = GetLine();
         if (line != "ENDSEC")
         {
-            Debug.LogError(_filePath + ": Header Invalid! (Section not closed)");
+            Debug.LogError(_file.FullName + ": Header Invalid! (Section not closed)");
             return false;
         }
 
@@ -138,7 +139,7 @@ public class IFCParser
         var schema = line.Substring(start, length);
         if (!Array.Exists(SupportedSchemas, elem => elem == schema))
         {
-            Debug.LogError(_filePath + ": Schema not supported! (" + schema + ")\nSupported Schemas: " + Helpers.ArrayToString(SupportedSchemas));
+            Debug.LogError(_file.FullName + ": Schema not supported! (" + schema + ")\nSupported Schemas: " + SupportedSchemas.ToString(','));
             return false;
         }
         return true;
@@ -153,7 +154,7 @@ public class IFCParser
             if (line == "DATA")
                 return true;
         }
-        Debug.LogError(_filePath + ": No Data Section found!");
+        Debug.LogError(_file.FullName + ": No Data Section found!");
         return false;
     }
     #endregion
@@ -189,7 +190,7 @@ public class IFCParser
         var propertiesStr = line.Substring(bracketsIdx + 1, line.Length - 1 - (bracketsIdx + 1));
 
         // Create Entity
-        var e = new IFCEntity(_filePath, id, propertiesStr, ',');
+        var e = new IFCEntity(_file, id, propertiesStr, ',');
         var inst = Convert.ChangeType(Activator.CreateInstance(entityType, e), entityType);
         return (IFCEntity)inst;
     }
@@ -214,6 +215,7 @@ public class IFCParser
         {
             // Read next character
             char c = (char)_sr.Read();
+            ++_parsedCharCount;
 
             // Remove comments
             // Single Line Start
@@ -260,7 +262,7 @@ public class IFCParser
                 continue;
             }
 
-            // Delimiter marks end of line (Unlessp art of string)
+            // Delimiter marks end of line (Unless part of string)
             if (!isString && c == delim)
             {
                 break;
@@ -288,6 +290,10 @@ public class IFCParser
     public int GetParsedLineCount()
     {
         return _parsedLineCount;
+    }
+    public int GetParsedCharCount()
+    {
+        return _parsedCharCount;
     }
     #endregion
 

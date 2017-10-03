@@ -7,6 +7,9 @@ using UnityEngine;
 
 public class IFCDataContainer
 {
+    public FileInfo File;
+    public int Index;
+
     private List<IFCEntity> _entities = new List<IFCEntity>();
     private ILookup<Type, IFCEntity> _entitiesByType;
     private ILookup<uint, IFCEntity> _entitiesById;
@@ -14,10 +17,11 @@ public class IFCDataContainer
     private IFCParser _parser;
     private bool _isParsed = false;
 
-    public IFCDataContainer(string filePath, uint batchSize = 500)
+    public IFCDataContainer(FileInfo file, uint batchSize = 500)
     {
+        File = file;
         // Create the parser
-        _parser = new IFCParser(filePath);
+        _parser = new IFCParser(file);
 
         // Check if the parser and file are valid
         if (!_parser.IsValid()) return;
@@ -46,6 +50,10 @@ public class IFCDataContainer
     public int GetParsedLineCount()
     {
         return _parser.GetParsedLineCount();
+    }
+    public int GetParsedCharCount()
+    {
+        return _parser.GetParsedCharCount();
     }
     public bool IsParsed()
     {

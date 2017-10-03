@@ -5,7 +5,7 @@ using System.Text;
 
 public static class Helpers
 {
-    public static string ArrayToString<T>(T[] array, char delim = ',')
+    public static string ToString<T>(this T[] array, char delim)
     {
         StringBuilder toRet = new StringBuilder();
         for (int i = 0; i < array.Length; ++i)
@@ -17,54 +17,10 @@ public static class Helpers
         return toRet.ToString();
     }
 
-    public static string ListToString<T>(List<T> list, char delim = ',')
+    public static string ToString<T>(this List<T> list, char delim)
     {
-        return ArrayToString(list.ToArray(), delim);
+        return list.ToArray().ToString(delim);
     }
-
-    #region Delegate Conversions
-
-    public static uint PropertyToId(string s)
-    {
-        if (s == "$" || s == "*") return 0;
-        return uint.Parse(s.Substring(1));
-    }
-
-    public static int PropertyToInt(string s)
-    {
-        if (s == "$" || s == "*") return 0;
-        return int.Parse(s);
-    }
-
-    public static float PropertyToFloat(string s)
-    {
-        if (s == "$" || s == "*") return 0;
-        return float.Parse(s);
-    }
-
-    public static bool PropertyToBool(string s)
-    {
-        if (s == "$" || s == "*") return false;
-        return s == ".T.";
-    }
-
-    public static string PropertyToString(string s)
-    {
-        if (s == "$" || s == "*") return "";
-        if (s.IndexOf('\'') == 0) return s.Substring(1, s.Length - 2);
-        return s;
-    }
-
-    public static T PropertyToEnum<T>(string s) where T : IConvertible
-    {
-        if (s == "$") return default(T);
-        var matches = Enum.GetValues(typeof(T)).Cast<T>()
-            .Where(e => s.Substring(1, s.Length - 2).ToUpper().Equals(e.ToString().ToUpper())).ToArray();
-        if (matches.Length < 1) return default(T);
-        return matches[0];
-    }
-
-    #endregion
 
     public static uint AsId(this string s)
     {
@@ -169,9 +125,23 @@ public static class Helpers
         return properties;
     }
 
+    public static void Add<TKey, TValue>(this Dictionary<TKey, TValue> d, KeyValuePair<TKey, TValue> key)
+    {
+        d.Add(key.Key, key.Value);
+    }
 
     public static void Clear(this StringBuilder sb)
     {
         sb.Remove(0, sb.Length);
+    }
+
+    private static string[] _byteUnits = {"", "k", "M", "G", "T"};
+    public static string BytesToString(long bytes)
+    {
+        float remaining = bytes;
+        int unit = 0;
+        while (remaining > 1024) {++unit; remaining /= 1024;}
+        string unitStr = unit == 0 ? "bytes" : _byteUnits[unit] + "B";
+        return remaining.ToString("0.0") + " " + unitStr;
     }
 }

@@ -6,14 +6,15 @@ using UnityEngine;
 
 public static class IFCDataManager
 {
-    private static Dictionary<string, int> _containerIds = new Dictionary<string, int>();
+    private static Dictionary<FileInfo, int> _containerIds = new Dictionary<FileInfo, int>();
     private static List<IFCDataContainer> _data = new List<IFCDataContainer>();
 
     #region Add
-    public static void AddDataContainer(string file, IFCDataContainer container)
+    public static void AddDataContainer(FileInfo file, IFCDataContainer container)
     {
         _containerIds[file] = _data.Count;
         _data.Add(container);
+        container.Index = _containerIds[file];
     }
     #endregion
 
@@ -23,7 +24,7 @@ public static class IFCDataManager
         _data[index] = container;
     }
 
-    public static void SetDataContainer(string file, IFCDataContainer container)
+    public static void SetDataContainer(FileInfo file, IFCDataContainer container)
     {
         _data[_containerIds[file]] = container;
     }
@@ -36,7 +37,7 @@ public static class IFCDataManager
         _containerIds.Remove(GetContainerFile(index));
     }
 
-    public static void RemoveDataContainer(string file)
+    public static void RemoveDataContainer(FileInfo file)
     {
         _data.RemoveAt(GetContainerId(file));
         _containerIds.Remove(file);
@@ -49,33 +50,20 @@ public static class IFCDataManager
         return _data[index];
     }
 
-    public static IFCDataContainer GetDataContainer(string file)
+    public static IFCDataContainer GetDataContainer(FileInfo file)
     {
         return _data[_containerIds[file]];
     }
 
-    public static int GetContainerId(string file)
+    public static int GetContainerId(FileInfo file)
     {
         return _containerIds[file];
     }
 
-    public static string GetContainerFile(int index, bool fullPath = false)
+    public static FileInfo GetContainerFile(int index)
     {
         var file = _containerIds.Where(c => c.Value == index).ToArray()[0].Key;
-        return fullPath ? file : StripPath(file);
-    }
-
-    public static int GetContainerId(IFCDataContainer container)
-    {
-        int index = 0;
-        _data.ForEach(c => { if (c == container) return; ++index; });
-        return index;
-    }
-
-    public static string GetContainerFile(IFCDataContainer container, bool fullPath = false)
-    {
-        var file = GetContainerFile(GetContainerId(container));
-        return fullPath ? file : StripPath(file);
+        return file;
     }
 
     public static List<IFCDataContainer> GetAllData()
@@ -102,9 +90,4 @@ public static class IFCDataManager
         return c;
     }
     #endregion
-
-    private static string StripPath(string file)
-    {
-        return new FileInfo(file).Name;
-    }
 }
