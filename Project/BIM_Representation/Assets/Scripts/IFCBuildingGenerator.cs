@@ -11,7 +11,7 @@ public class IFCBuildingGenerator : MonoBehaviour
 {
     [Header("Settings")]
     [Tooltip("Add Files to Parse.\nRequires Full Path.\nIncrease the Size to add more files.")]
-    public List<string> Files = new List<string>(){""};
+    public List<string> Files = new List<string>() { "" };
     [Space(10)]
     [Tooltip("Amount of lines to be parsed per frame.\nRecommend 500-2500.\nLower will reduce Parse speed, higher will freeze the Application.")]
     public uint BatchSize = 1000;
@@ -42,9 +42,11 @@ public class IFCBuildingGenerator : MonoBehaviour
         {
             var container = new IFCDataContainer(file, (uint)((float)BatchSize / Files.Count));
             IFCDataManager.AddDataContainer(file, container);
-            CoroutineManager.Instance().BeginCoroutine(CreateGeometry(container));
+            //CoroutineManager.Instance().BeginCoroutine(CreateGeometry(container));
 
         }
+        //CoroutineManager.Instance().BeginCoroutine(CreateMetadata());
+        CoroutineManager.Instance().BeginCoroutine(CreateGeometry());
         CoroutineManager.Instance().BeginCoroutine(UpdateParseProgress());
     }
 
@@ -105,36 +107,43 @@ public class IFCBuildingGenerator : MonoBehaviour
         // Flag building generated
         _isGenerated = true;
     }
-    
-    private IEnumerator CreateGeometry(IFCDataContainer container)
+
+    private IEnumerator CreateMetadata()
     {
-        // Wait until parsed
-        while (!container.IsParsed()) yield return 0;
+        while (IFCDataManager.IsParsing()) yield return 0;
 
-        // Calculate size
-        var scale = GetScale(container);
+        IFCDataManager.GetAllData().ForEach(x =>
+        {
+            x.GetEntities<IFCEntity>(true).ForEach(e =>
+            {
+                GameObject go = new GameObject();
+                go.name = e.GetType().ToString() + " #" + e.Id.ToString();
+                var script = go.AddComponent<Metadata>();
+                script.SetMetadata(e);
+            });
+        });
+    }
 
-        // Create Building
-        var building = CreateBuilding(container, scale);
+    private IEnumerator CreateGeometry()
+    {
+        while (IFCDataManager.IsParsing()) yield return 0;
 
-        // Create Building Elements
-        var buildingElements = CreateBuildingElements(container, building);
-
-        // Get Geometry Sets
-        var geometrySets = container.GetEntities<IIFCConnectedFaceSet>(true);
-
-        // Create meshes from geometry sets
-        CreateMeshes(geometrySets, container, building);
+        IFCDataManager.GetAllData().ForEach(x =>
+        {
+            var scale = GetScale(x);
+            var building = CreateBuilding(x, scale);
+            CreateMeshes(x.GetEntities<IIFCConnectedFaceSet>(true), x, building);
+        });
     }
 
     private float GetScale(IFCDataContainer container)
     {
         float scale = 1;
         var units = container.GetEntities<IIFCNamedUnit>(true);
-        var lengthUnits = units.Where(unit => unit.GetEnumProperty<IFCUnitEnum>("UnitType") == IFCUnitEnum.LENGTHUNIT).ToArray();
+        var lengthUnits = units.Where(unit => unit.GetProperty("UnitType").AsEnum<IFCUnitEnum>() == IFCUnitEnum.LENGTHUNIT).ToArray();
         if (lengthUnits.Length > 0)
         {
-            var pow = (int)lengthUnits[0].GetEnumProperty<IFCSIPrefix>("Prefix");
+            var pow = (int)lengthUnits[0].GetProperty("Prefix").AsEnum<IFCSIPrefix>();
             scale = Mathf.Pow(10, pow);
         }
         return scale;
@@ -147,20 +156,79 @@ public class IFCBuildingGenerator : MonoBehaviour
         if (buildings.Count > 0)
         {
             var building = buildings[0];
-            go.name = building.GetStringProperty("Name") + " (" + building.GetStringProperty("GlobalId") + ")";
-            var location = building.GetReference<IFCCartesianPoint>(new [] {"ObjectPlacement", "RelativePlacement", "Location"});
-            go.transform.Translate(location.GetVector3());
+            go.name = building.GetProperty("Name").AsString() + " (" + building.GetProperty("GlobalId").AsString() +
+                      ")";
+            var coords = building.GetReference("ObjectPlacement").GetReference("RelativePlacement")
+                .GetReference("Location").GetProperty("Coordinates").AsList();
+            Vector3 pos = new Vector3(coords[0].AsFloat(), coords[1].AsFloat(), coords[2].AsFloat());
+            go.transform.Translate(pos);
         }
         else
         {
             go.name = "Missing IFCBuilding!";
         }
-        // Resolve misaligned axis
+        // Resolve misaligned axis (Z-up instead of Y-up)
         go.transform.Rotate(new Vector3(-90, 0, 0));
         // Set Scale
         go.transform.localScale = new Vector3(scale, scale, scale);
         return go;
     }
+
+    //private IEnumerator CreateGeometry(IFCDataContainer container)
+    //{
+    //    // Wait until parsed
+    //    while (!container.IsParsed()) yield return 0;
+    //
+    //    // Calculate size
+    //    var scale = GetScale(container);
+    //
+    //    // Create Building
+    //    var building = CreateBuilding(container, scale);
+    //
+    //    // Create Building Elements
+    //    var buildingElements = CreateBuildingElements(container, building);
+    //
+    //    // Get Geometry Sets
+    //    var geometrySets = container.GetEntities<IIFCConnectedFaceSet>(true);
+    //
+    //    // Create meshes from geometry sets
+    //    CreateMeshes(geometrySets, container, building);
+    //}
+
+    //private float GetScale(IFCDataContainer container)
+    //{
+    //    float scale = 1;
+    //    var units = container.GetEntities<IIFCNamedUnit>(true);
+    //    //var lengthUnits = units.Where(unit => unit.GetEnumProperty<IFCUnitEnum>("UnitType") == IFCUnitEnum.LENGTHUNIT).ToArray();
+    //    //if (lengthUnits.Length > 0)
+    //    //{
+    //    //    var pow = (int)lengthUnits[0].GetEnumProperty<IFCSIPrefix>("Prefix");
+    //    //    scale = Mathf.Pow(10, pow);
+    //    //}
+    //    return scale;
+    //}
+
+    //private GameObject CreateBuilding(IFCDataContainer container, float scale)
+    //{
+    //    GameObject go = new GameObject();
+    //    var buildings = container.GetEntities<IFCBuilding>(false);
+    //    if (buildings.Count > 0)
+    //    {
+    //        var building = buildings[0];
+    //        //go.name = building.GetStringProperty("Name") + " (" + building.GetStringProperty("GlobalId") + ")";
+    //        //var location = building.GetReference<IFCCartesianPoint>(new [] {"ObjectPlacement", "RelativePlacement", "Location"});
+    //        //go.transform.Translate(location.GetVector3());
+    //    }
+    //    else
+    //    {
+    //        go.name = "Missing IFCBuilding!";
+    //    }
+    //    // Resolve misaligned axis
+    //    go.transform.Rotate(new Vector3(-90, 0, 0));
+    //    // Set Scale
+    //    go.transform.localScale = new Vector3(scale, scale, scale);
+    //    return go;
+    //}
 
     private List<GameObject> CreateBuildingElements(IFCDataContainer container, GameObject parent)
     {
@@ -182,6 +250,7 @@ public class IFCBuildingGenerator : MonoBehaviour
         var go = new GameObject();
         go.transform.SetParent(parent.transform, false);
         go.name = geometrySet.Id.ToString();
+        go.AddComponent<Metadata>().SetMetadata(geometrySet);
 
         // Add Mesh Filter
         var mf = go.AddComponent<MeshFilter>();
@@ -190,7 +259,7 @@ public class IFCBuildingGenerator : MonoBehaviour
         List<int> indices;
         List<Vector3> normals;
         List<Vector2> uvs;
-        geometrySet.GetMeshFilterBuffers(container, out vertices, out indices, out normals, out uvs);
+        CreateBuffers(geometrySet, out vertices, out indices, out normals, out uvs);
         mf.mesh.vertices = vertices.ToArray();
         mf.mesh.triangles = indices.ToArray();
         mf.mesh.normals = normals.ToArray();
@@ -200,5 +269,66 @@ public class IFCBuildingGenerator : MonoBehaviour
         var mr = go.AddComponent<MeshRenderer>();
         // Set Material
         mr.material = DefaultMaterial;
+    }
+
+    public void CreateBuffers(IIFCConnectedFaceSet geometrySet,
+         out List<Vector3> vertices, out List<int> indices, out List<Vector3> normals, out List<Vector2> uvs)
+    {
+        vertices = new List<Vector3>();
+        indices = new List<int>();
+        normals = new List<Vector3>();
+        uvs = new List<Vector2>();
+
+        var container = IFCDataManager.GetDataContainer(geometrySet.File);
+        foreach (var face in geometrySet.GetProperty("CfsFaces").AsList())
+        {
+            foreach (var bound in container.GetEntity(face.AsId()).GetProperty("Bounds").AsList())
+            {
+                var loopId = container.GetEntity(bound.AsId()).GetProperty("Bound").AsId();
+                List<Vector3> vertsFromLoop = new List<Vector3>();
+                foreach (var point in container.GetEntity(loopId).GetProperty("Polygon").AsList())
+                {
+                    var coords = container.GetEntity(point.AsId()).GetProperty("Coordinates").AsList();
+                    vertsFromLoop.Add(new Vector3(coords[0].AsFloat(), coords[1].AsFloat(), coords[2].AsFloat()));
+                }
+                AddToBuffer(vertsFromLoop, ref vertices, ref indices, ref normals, ref uvs);
+            }
+        }
+    }
+
+    private void AddToBuffer(List<Vector3> verts,
+        ref List<Vector3> vertices, ref List<int> indices, ref List<Vector3> normals, ref List<Vector2> uvs)
+    {
+        List<int> vertRefs = new List<int>();
+        int index = indices.Count;
+        Vector3 normal = CalculateNormal(verts[0], verts[1], verts[2]);
+        Vector2 uv = new Vector2(0, 0);
+
+        for (int i = 2; i < verts.Count; ++i)
+        {
+            vertRefs.Add(0);
+            vertRefs.Add(i - 1);
+            vertRefs.Add(i);
+        }
+
+        for (int i = 0; i < vertRefs.Count; ++i)
+        {
+            AddToBuffer(verts[vertRefs[i]], index + i, normal, uv,
+                ref vertices, ref indices, ref normals, ref uvs);
+        }
+    }
+
+    private void AddToBuffer(Vector3 vert, int index, Vector3 normal, Vector2 uv,
+        ref List<Vector3> vertices, ref List<int> indices, ref List<Vector3> normals, ref List<Vector2> uvs)
+    {
+        vertices.Add(vert);
+        indices.Add(index);
+        normals.Add(normal);
+        uvs.Add(uv);
+    }
+
+    private Vector3 CalculateNormal(Vector3 a, Vector3 b, Vector3 c)
+    {
+        return Vector3.Cross(b - a, c - a).normalized;
     }
 }

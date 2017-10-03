@@ -189,7 +189,7 @@ public class IFCParser
         var propertiesStr = line.Substring(bracketsIdx + 1, line.Length - 1 - (bracketsIdx + 1));
 
         // Create Entity
-        var e = new IFCEntity(_filePath, id, entityType, propertiesStr, ',');
+        var e = new IFCEntity(_filePath, id, propertiesStr, ',');
         var inst = Convert.ChangeType(Activator.CreateInstance(entityType, e), entityType);
         return (IFCEntity)inst;
     }

@@ -233,6 +233,7 @@ public class IFCProperties
 #region IFCEntity
 public class IFCEntity
 {
+    #region Static
     private static IEnumerable<Type> _entityTypes = typeof(IFCEntity).Assembly.GetTypes()
         .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(IFCEntity)));
 
@@ -251,201 +252,251 @@ public class IFCEntity
         if (matches.Length < 1) return typeof(IFCEntity);
         return matches[0];
     }
+    #endregion
 
     public string File;
     public uint Id;
-    public Type EntityType;
-    public IFCProperties Properties;
 
-    private List<KeyValuePair<string, Type>> Keys = new List<KeyValuePair<string, Type>>();
-    private Dictionary<string, IIFCPropertyField> Variables = new Dictionary<string, IIFCPropertyField>();
+    public List<string> Keys;
+    public List<string> Properties;
 
-    #region Constructors
     public IFCEntity()
     {
         File = null;
         Id = 0;
-        EntityType = null;
-        Properties = null;
+        Keys = new List<string>();
+        Properties = new List<string>();
     }
 
     public IFCEntity(IFCEntity e)
     {
         File = e.File;
         Id = e.Id;
-        EntityType = e.EntityType;
+        Keys = e.Keys;
         Properties = e.Properties;
     }
 
-    public IFCEntity(string file, uint id, Type type, string propertiesStr, char delim)
+    public IFCEntity(string file, uint id, string propertiesStr, char delim)
     {
         File = file;
         Id = id;
-        EntityType = type;
-        List<char> buffer = new List<char>();
-        buffer.AddRange(propertiesStr.ToCharArray());
-        Properties = ParseProperties(buffer, delim);
+        Keys = new List<string>();
+        Properties = Helpers.SplitProperties(propertiesStr, delim);
     }
+
+    protected void AddKey(string name, Type type)
+    {
+        Keys.Add(name);
+    }
+
+    public string GetProperty(string key)
+    {
+        for (int i = 0; i < Keys.Count; ++i)
+        {
+            if (Keys[i] == key) return Properties[i];
+        }
+        return "";
+    }
+
+    public IFCEntity GetReference(string key)
+    {
+        return IFCDataManager.GetDataContainer(File).GetEntity(GetProperty(key).AsId());
+    }
+
+    //public string File;
+    //public uint Id;
+    //public Type EntityType;
+    //public IFCProperties Properties;
+    //
+    //private List<KeyValuePair<string, Type>> Keys = new List<KeyValuePair<string, Type>>();
+    //private Dictionary<string, IIFCPropertyField> Variables = new Dictionary<string, IIFCPropertyField>();
+
+    #region Constructors
+    //public IFCEntity()
+    //{
+    //    File = null;
+    //    Id = 0;
+    //    EntityType = null;
+    //    Properties = null;
+    //}
+
+    //public IFCEntity(IFCEntity e)
+    //{
+    //    File = e.File;
+    //    Id = e.Id;
+    //    EntityType = e.EntityType;
+    //    Properties = e.Properties;
+    //}
+
+    //public IFCEntity(string file, uint id, Type type, string propertiesStr, char delim)
+    //{
+    //    File = file;
+    //    Id = id;
+    //    EntityType = type;
+    //    List<char> buffer = new List<char>();
+    //    buffer.AddRange(propertiesStr.ToCharArray());
+    //    Properties = ParseProperties(buffer, delim);
+    //}
     #endregion
 
     #region Methods used in Contructor of derived class
-    protected void AddKey(string name, Type type)
-    {
-        Keys.Add(new KeyValuePair<string, Type>(name, type));
-    }
+    //protected void AddKey(string name, Type type)
+    //{
+    //    Keys.Add(new KeyValuePair<string, Type>(name, type));
+    //}
 
-    protected void SetVariables(IFCEntity e)
-    {
-        File = e.File;
-        Id = e.Id;
-        EntityType = e.EntityType;
-        Properties = e.Properties;
-
-        for (int i = 0; i < Keys.Count; ++i)
-        {
-            Variables[Keys[i].Key] = Properties.GetProperty(i);
-        }
-    }
+    //protected void SetVariables(IFCEntity e)
+    //{
+    //    File = e.File;
+    //    Id = e.Id;
+    //    EntityType = e.EntityType;
+    //    Properties = e.Properties;
+    //
+    //    for (int i = 0; i < Keys.Count; ++i)
+    //    {
+    //        Variables[Keys[i].Key] = Properties.GetProperty(i);
+    //    }
+    //}
     #endregion
 
     #region Getters
-    public Type GetPropertyType(string name)
-    {
-        var matches = Keys.Where(k => k.Key == name).ToArray();
-        if (matches.Length < 1)
-        {
-            Debug.LogError("Couldn't find Property with name " + name);
-            return typeof(IFCEntity);
-        }
-        return matches[0].Value;
-    }
+    //public Type GetPropertyType(string name)
+    //{
+    //    var matches = Keys.Where(k => k.Key == name).ToArray();
+    //    if (matches.Length < 1)
+    //    {
+    //        Debug.LogError("Couldn't find Property with name " + name);
+    //        return typeof(IFCEntity);
+    //    }
+    //    return matches[0].Value;
+    //}
 
-    public T GetReference<T>(string name) where T : IFCEntity
-    {
-        return IFCDataManager.GetDataContainer(File).GetEntity<T>(GetIdProperty(name));
-    }
+    //public T GetReference<T>(string name) where T : IFCEntity
+    //{
+    //    return IFCDataManager.GetDataContainer(File).GetEntity<T>(GetIdProperty(name));
+    //}
+    //
+    //public T GetReference<T>(string[] names) where T : IFCEntity
+    //{
+    //    IFCEntity toRet = this;
+    //    foreach (var name in names)
+    //    {
+    //        toRet = toRet.GetReference<IFCEntity>(name);
+    //    }
+    //    return (T)toRet;
+    //}
 
-    public T GetReference<T>(string[] names) where T : IFCEntity
-    {
-        IFCEntity toRet = this;
-        foreach (var name in names)
-        {
-            toRet = toRet.GetReference<IFCEntity>(name);
-        }
-        return (T)toRet;
-    }
+    //public uint GetIdProperty(string name)
+    //{
+    //    if (!CheckMatchingType(name, typeof(uint)))
+    //        return default(uint);
+    //    return Helpers.PropertyToId(((IFCPropertyField<string>)Variables[name]).GetValue());
+    //}
+    //
+    //public List<uint> GetIdListProperty(string name)
+    //{
+    //    if (!CheckMatchingType(name, typeof(List<uint>)))
+    //        return default(List<uint>);
+    //    List<uint> toRet = new List<uint>();
+    //    ((IFCPropertyField<IFCProperties>)Variables[name]).GetValue().GetProperties<string>()
+    //        .ForEach(x => toRet.Add(Helpers.PropertyToId(x.GetValue())));
+    //    return toRet;
+    //}
+    //
+    //public int GetIntProperty(string name)
+    //{
+    //    if (!CheckMatchingType(name, typeof(int)))
+    //        return default(int);
+    //    return Helpers.PropertyToInt(((IFCPropertyField<string>)Variables[name]).GetValue());
+    //}
+    //
+    //public List<int> GetIntListProperty(string name)
+    //{
+    //    if (!CheckMatchingType(name, typeof(List<int>)))
+    //        return default(List<int>);
+    //    List<int> toRet = new List<int>();
+    //    ((IFCPropertyField<IFCProperties>)Variables[name]).GetValue().GetProperties<string>()
+    //        .ForEach(x => toRet.Add(Helpers.PropertyToInt(x.GetValue())));
+    //    return toRet;
+    //}
+    //
+    //public float GetFloatProperty(string name)
+    //{
+    //    if (!CheckMatchingType(name, typeof(float)))
+    //        return default(float);
+    //    return Helpers.PropertyToFloat(((IFCPropertyField<string>)Variables[name]).GetValue());
+    //}
+    //
+    //public List<float> GetFloatListProperty(string name)
+    //{
+    //    if (!CheckMatchingType(name, typeof(List<float>)))
+    //        return default(List<float>);
+    //    List<float> toRet = new List<float>();
+    //    ((IFCPropertyField<IFCProperties>)Variables[name]).GetValue().GetProperties<string>()
+    //        .ForEach(x => toRet.Add(Helpers.PropertyToFloat(x.GetValue())));
+    //    return toRet;
+    //}
+    //
+    //public bool GetBoolProperty(string name)
+    //{
+    //    if (!CheckMatchingType(name, typeof(bool)))
+    //        return default(bool);
+    //    return Helpers.PropertyToBool(((IFCPropertyField<string>)Variables[name]).GetValue());
+    //}
+    //
+    //public List<bool> GetBoolListProperty(string name)
+    //{
+    //    if (!CheckMatchingType(name, typeof(List<bool>)))
+    //        return default(List<bool>);
+    //    List<bool> toRet = new List<bool>();
+    //    ((IFCPropertyField<IFCProperties>)Variables[name]).GetValue().GetProperties<string>()
+    //        .ForEach(x => toRet.Add(Helpers.PropertyToBool(x.GetValue())));
+    //    return toRet;
+    //}
+    //
+    //public string GetStringProperty(string name)
+    //{
+    //    if (!CheckMatchingType(name, typeof(string)))
+    //        return default(string);
+    //    return Helpers.PropertyToString(((IFCPropertyField<string>)Variables[name]).GetValue());
+    //}
+    //
+    //public List<string> GetStringListProperty(string name)
+    //{
+    //    if (!CheckMatchingType(name, typeof(List<float>)))
+    //        return default(List<string>);
+    //    List<string> toRet = new List<string>();
+    //    ((IFCPropertyField<IFCProperties>)Variables[name]).GetValue().GetProperties<string>()
+    //        .ForEach(x => toRet.Add(Helpers.PropertyToString(x.GetValue())));
+    //    return toRet;
+    //}
+    //
+    //public T GetEnumProperty<T>(string name) where T : IConvertible
+    //{
+    //    if (!CheckMatchingType(name, typeof(T)))
+    //        return default(T);
+    //    return Helpers.PropertyToEnum<T>(((IFCPropertyField<string>)Variables[name]).GetValue());
+    //}
+    //
+    //public List<T> GetEnumListProperty<T>(string name) where T : IConvertible
+    //{
+    //    if (!CheckMatchingType(name, typeof(List<T>)))
+    //        return default(List<T>);
+    //    List<T> toRet = new List<T>();
+    //    ((IFCPropertyField<IFCProperties>)Variables[name]).GetValue().GetProperties<string>()
+    //        .ForEach(x => toRet.Add(Helpers.PropertyToEnum<T>(x.GetValue())));
+    //    return toRet;
+    //}
 
-    public uint GetIdProperty(string name)
-    {
-        if (!CheckMatchingType(name, typeof(uint)))
-            return default(uint);
-        return Helpers.PropertyToId(((IFCPropertyField<string>)Variables[name]).GetValue());
-    }
-
-    public List<uint> GetIdListProperty(string name)
-    {
-        if (!CheckMatchingType(name, typeof(List<uint>)))
-            return default(List<uint>);
-        List<uint> toRet = new List<uint>();
-        ((IFCPropertyField<IFCProperties>)Variables[name]).GetValue().GetProperties<string>()
-            .ForEach(x => toRet.Add(Helpers.PropertyToId(x.GetValue())));
-        return toRet;
-    }
-
-    public int GetIntProperty(string name)
-    {
-        if (!CheckMatchingType(name, typeof(int)))
-            return default(int);
-        return Helpers.PropertyToInt(((IFCPropertyField<string>)Variables[name]).GetValue());
-    }
-
-    public List<int> GetIntListProperty(string name)
-    {
-        if (!CheckMatchingType(name, typeof(List<int>)))
-            return default(List<int>);
-        List<int> toRet = new List<int>();
-        ((IFCPropertyField<IFCProperties>)Variables[name]).GetValue().GetProperties<string>()
-            .ForEach(x => toRet.Add(Helpers.PropertyToInt(x.GetValue())));
-        return toRet;
-    }
-
-    public float GetFloatProperty(string name)
-    {
-        if (!CheckMatchingType(name, typeof(float)))
-            return default(float);
-        return Helpers.PropertyToFloat(((IFCPropertyField<string>)Variables[name]).GetValue());
-    }
-
-    public List<float> GetFloatListProperty(string name)
-    {
-        if (!CheckMatchingType(name, typeof(List<float>)))
-            return default(List<float>);
-        List<float> toRet = new List<float>();
-        ((IFCPropertyField<IFCProperties>)Variables[name]).GetValue().GetProperties<string>()
-            .ForEach(x => toRet.Add(Helpers.PropertyToFloat(x.GetValue())));
-        return toRet;
-    }
-
-    public bool GetBoolProperty(string name)
-    {
-        if (!CheckMatchingType(name, typeof(bool)))
-            return default(bool);
-        return Helpers.PropertyToBool(((IFCPropertyField<string>)Variables[name]).GetValue());
-    }
-
-    public List<bool> GetBoolListProperty(string name)
-    {
-        if (!CheckMatchingType(name, typeof(List<bool>)))
-            return default(List<bool>);
-        List<bool> toRet = new List<bool>();
-        ((IFCPropertyField<IFCProperties>)Variables[name]).GetValue().GetProperties<string>()
-            .ForEach(x => toRet.Add(Helpers.PropertyToBool(x.GetValue())));
-        return toRet;
-    }
-
-    public string GetStringProperty(string name)
-    {
-        if (!CheckMatchingType(name, typeof(string)))
-            return default(string);
-        return Helpers.PropertyToString(((IFCPropertyField<string>)Variables[name]).GetValue());
-    }
-
-    public List<string> GetStringListProperty(string name)
-    {
-        if (!CheckMatchingType(name, typeof(List<float>)))
-            return default(List<string>);
-        List<string> toRet = new List<string>();
-        ((IFCPropertyField<IFCProperties>)Variables[name]).GetValue().GetProperties<string>()
-            .ForEach(x => toRet.Add(Helpers.PropertyToString(x.GetValue())));
-        return toRet;
-    }
-
-    public T GetEnumProperty<T>(string name) where T : IConvertible
-    {
-        if (!CheckMatchingType(name, typeof(T)))
-            return default(T);
-        return Helpers.PropertyToEnum<T>(((IFCPropertyField<string>)Variables[name]).GetValue());
-    }
-
-    public List<T> GetEnumListProperty<T>(string name) where T : IConvertible
-    {
-        if (!CheckMatchingType(name, typeof(List<T>)))
-            return default(List<T>);
-        List<T> toRet = new List<T>();
-        ((IFCPropertyField<IFCProperties>)Variables[name]).GetValue().GetProperties<string>()
-            .ForEach(x => toRet.Add(Helpers.PropertyToEnum<T>(x.GetValue())));
-        return toRet;
-    }
-
-    private bool CheckMatchingType(string name, Type given)
-    {
-        if (GetPropertyType(name) != given)
-        {
-            Debug.LogError("IFCEntity variable " + name + " is of type " + name.GetType() + ", not type " + given);
-            return false;
-        }
-        return true;
-    }
+    //private bool CheckMatchingType(string name, Type given)
+    //{
+    //    if (GetPropertyType(name) != given)
+    //    {
+    //        Debug.LogError("IFCEntity variable " + name + " is of type " + name.GetType() + ", not type " + given);
+    //        return false;
+    //    }
+    //    return true;
+    //}
     #endregion
 
     #region Properties from line
@@ -462,11 +513,10 @@ public class IFCEntity
             // Shift buffer
             buffer.RemoveAt(0);
 
-
             // Brackets encapsulate a list of properties (= another IFCProperties variable)
             if (c == '(')
             {
-                property.Remove(0, property.Length);
+                property.Clear();
                 toRet.AddProperty(ParseProperties(buffer, delim));
                 continue;
             }
@@ -478,7 +528,7 @@ public class IFCEntity
                 if (property.Length != 0)
                     toRet.AddProperty(property.ToString());
                 // Clear property
-                property.Remove(0, property.Length);
+                property.Clear();
                 continue;
             }
 
@@ -508,11 +558,13 @@ public class IFCEntity
 /// </summary>
 public abstract class IIFCPoint : IFCEntity
 {
-    public Vector3 GetVector3()
-    {
-        var coords = GetFloatListProperty("Coordinates");
-        return new Vector3(coords[0], coords[1], coords[2]);
-    }
+    protected IIFCPoint(IFCEntity e) : base(e) { }
+
+    //public Vector3 GetVector3()
+    //{
+    //    var coords = GetFloatListProperty("Coordinates");
+    //    return new Vector3(coords[0], coords[1], coords[2]);
+    //}
 }
 
 /// <summary>
@@ -520,11 +572,11 @@ public abstract class IIFCPoint : IFCEntity
 /// </summary>
 public class IFCCartesianPoint : IIFCPoint
 {
-    public IFCCartesianPoint(IFCEntity e)
+    public IFCCartesianPoint(IFCEntity e) : base(e)
     {
         AddKey("Coordinates", typeof(List<float>));
 
-        SetVariables(e);
+        //SetVariables(e);
     }
 }
 
@@ -534,12 +586,12 @@ public class IFCCartesianPoint : IIFCPoint
 /// </summary>
 public class IFCPointOnCurve : IIFCPoint
 {
-    public IFCPointOnCurve(IFCEntity e)
+    public IFCPointOnCurve(IFCEntity e) : base(e)
     {
         AddKey("BasisCurve", typeof(uint));
         AddKey("PointParameter", typeof(float));
 
-        SetVariables(e);
+        //SetVariables(e);
     }
 }
 
@@ -550,13 +602,13 @@ public class IFCPointOnCurve : IIFCPoint
 /// </summary>
 public class IFCPointOnSurface : IIFCPoint
 {
-    public IFCPointOnSurface(IFCEntity e)
+    public IFCPointOnSurface(IFCEntity e) : base(e)
     {
         AddKey("BasisSurface", typeof(uint));
         AddKey("PointParameterU", typeof(float));
         AddKey("PointParameterV", typeof(float));
 
-        SetVariables(e);
+        //SetVariables(e);
     }
 }
 #endregion
@@ -567,6 +619,7 @@ public class IFCPointOnSurface : IIFCPoint
 /// </summary>
 public abstract class IIFCVertex : IFCEntity
 {
+    protected IIFCVertex(IFCEntity e) : base(e) { }
 }
 
 /// <summary>
@@ -574,11 +627,11 @@ public abstract class IIFCVertex : IFCEntity
 /// </summary>
 public class IFCVertexPoint : IIFCVertex
 {
-    public IFCVertexPoint(IFCEntity e)
+    public IFCVertexPoint(IFCEntity e) : base(e)
     {
         AddKey("VertexGeometry", typeof(uint));
 
-        SetVariables(e);
+        //SetVariables(e);
     }
 }
 #endregion
@@ -589,6 +642,7 @@ public class IFCVertexPoint : IIFCVertex
 /// </summary>
 public abstract class IIFCDirection : IFCEntity
 {
+    public IIFCDirection(IFCEntity e) : base(e) { }
 }
 
 /// <summary>
@@ -596,11 +650,11 @@ public abstract class IIFCDirection : IFCEntity
 /// </summary>
 public class IFCDirection : IIFCDirection
 {
-    public IFCDirection(IFCEntity e)
+    public IFCDirection(IFCEntity e) : base(e)
     {
         AddKey("DirectionRatios", typeof(List<float>));
 
-        SetVariables(e);
+        //SetVariables(e);
     }
 }
 #endregion
@@ -613,6 +667,7 @@ public class IFCDirection : IIFCDirection
 /// </summary>
 public abstract class IIFCLoop : IFCEntity
 {
+    protected IIFCLoop(IFCEntity e) : base(e) { }
 }
 
 /// <summary>
@@ -620,11 +675,11 @@ public abstract class IIFCLoop : IFCEntity
 /// </summary>
 public class IFCPolyLoop : IIFCLoop
 {
-    public IFCPolyLoop(IFCEntity e)
+    public IFCPolyLoop(IFCEntity e) : base(e)
     {
         AddKey("Polygon", typeof(List<uint>));
 
-        SetVariables(e);
+        //SetVariables(e);
     }
 }
 
@@ -633,11 +688,11 @@ public class IFCPolyLoop : IIFCLoop
 /// </summary>
 public class IFCVertexLoop : IIFCLoop
 {
-    public IFCVertexLoop(IFCEntity e)
+    public IFCVertexLoop(IFCEntity e) : base(e)
     {
         AddKey("LoopVertex", typeof(uint));
 
-        SetVariables(e);
+        //SetVariables(e);
     }
 }
 
@@ -646,11 +701,11 @@ public class IFCVertexLoop : IIFCLoop
 /// </summary>
 public class IFCEdgeLoop : IIFCLoop
 {
-    public IFCEdgeLoop(IFCEntity e)
+    public IFCEdgeLoop(IFCEntity e) : base(e)
     {
         AddKey("EdgeList", typeof(List<uint>));
 
-        SetVariables(e);
+        //SetVariables(e);
     }
 }
 #endregion
@@ -662,6 +717,7 @@ public class IFCEdgeLoop : IIFCLoop
 /// </summary>
 public abstract class IIFCFaceBound : IFCEntity
 {
+    protected IIFCFaceBound(IFCEntity e) : base(e) { }
 }
 
 /// <summary>
@@ -670,12 +726,12 @@ public abstract class IIFCFaceBound : IFCEntity
 /// </summary>
 public class IFCFaceBound : IIFCFaceBound
 {
-    public IFCFaceBound(IFCEntity e)
+    public IFCFaceBound(IFCEntity e) : base(e)
     {
         AddKey("Bound", typeof(uint)); ;
         AddKey("Orientation", typeof(bool));
 
-        SetVariables(e);
+        //SetVariables(e);
     }
 }
 
@@ -685,12 +741,12 @@ public class IFCFaceBound : IIFCFaceBound
 /// </summary>
 public class IFCFaceOuterBound : IIFCFaceBound
 {
-    public IFCFaceOuterBound(IFCEntity e)
+    public IFCFaceOuterBound(IFCEntity e) : base(e)
     {
         AddKey("Bound", typeof(uint));
         AddKey("Orientation", typeof(bool));
 
-        SetVariables(e);
+        //SetVariables(e);
     }
 }
 #endregion
@@ -702,6 +758,7 @@ public class IFCFaceOuterBound : IIFCFaceBound
 /// </summary>
 public abstract class IIFCFace : IFCEntity
 {
+    protected IIFCFace(IFCEntity e) : base(e) { }
 }
 
 /// <summary>
@@ -709,11 +766,11 @@ public abstract class IIFCFace : IFCEntity
 /// </summary>
 public class IFCFace : IIFCFace
 {
-    public IFCFace(IFCEntity e)
+    public IFCFace(IFCEntity e) : base(e)
     {
         AddKey("Bounds", typeof(List<uint>));
 
-        SetVariables(e);
+        //SetVariables(e);
     }
 }
 
@@ -723,12 +780,12 @@ public class IFCFace : IIFCFace
 /// </summary>
 public class IFCFaceSurface : IIFCFace
 {
-    public IFCFaceSurface(IFCEntity e)
+    public IFCFaceSurface(IFCEntity e) : base(e)
     {
         AddKey("Bounds", typeof(List<uint>));
         AddKey("SameSense", typeof(bool));
 
-        SetVariables(e);
+        //SetVariables(e);
     }
 }
 #endregion
@@ -740,6 +797,8 @@ public class IFCFaceSurface : IIFCFace
 /// </summary>
 public abstract class IIFCConnectedFaceSet : IFCEntity
 {
+    protected IIFCConnectedFaceSet(IFCEntity e) : base(e) { }
+
     public void GetMeshFilterBuffers(IFCDataContainer container,
         out List<Vector3> vertices, out List<int> indices, out List<Vector3> normals, out List<Vector2> uvs)
     {
@@ -747,23 +806,23 @@ public abstract class IIFCConnectedFaceSet : IFCEntity
         indices = new List<int>();
         normals = new List<Vector3>();
         uvs = new List<Vector2>();
-        foreach (var faceId in GetIdListProperty("CfsFaces"))
-        {
-            var face = container.GetEntity(faceId);
-            foreach (var boundId in face.GetIdListProperty("Bounds"))
-            {
-                var bound = container.GetEntity(boundId);
-                var loopId = bound.GetIdProperty("Bound");
-                var loop = container.GetEntity(loopId);
-                List<Vector3> vertsFromLoop = new List<Vector3>();
-                foreach (var pointId in loop.GetIdListProperty("Polygon"))
-                {
-                    var point = container.GetEntity<IIFCPoint>(pointId);
-                    vertsFromLoop.Add(point.GetVector3());
-                }
-                AddToBuffer(vertsFromLoop, ref vertices, ref indices, ref normals, ref uvs);
-            }
-        }
+        //foreach (var faceId in GetIdListProperty("CfsFaces"))
+        //{
+        //    var face = container.GetEntity(faceId);
+        //    foreach (var boundId in face.GetIdListProperty("Bounds"))
+        //    {
+        //        var bound = container.GetEntity(boundId);
+        //        var loopId = bound.GetIdProperty("Bound");
+        //        var loop = container.GetEntity(loopId);
+        //        List<Vector3> vertsFromLoop = new List<Vector3>();
+        //        foreach (var pointId in loop.GetIdListProperty("Polygon"))
+        //        {
+        //            var point = container.GetEntity<IIFCPoint>(pointId);
+        //            vertsFromLoop.Add(point.GetVector3());
+        //        }
+        //        AddToBuffer(vertsFromLoop, ref vertices, ref indices, ref normals, ref uvs);
+        //    }
+        //}
     }
 
     private void AddToBuffer(List<Vector3> verts,
@@ -808,11 +867,11 @@ public abstract class IIFCConnectedFaceSet : IFCEntity
 /// </summary>
 public class IFCClosedShell : IIFCConnectedFaceSet
 {
-    public IFCClosedShell(IFCEntity e)
+    public IFCClosedShell(IFCEntity e) : base(e)
     {
         AddKey("CfsFaces", typeof(List<uint>));
 
-        SetVariables(e);
+        //SetVariables(e);
     }
 }
 
@@ -821,11 +880,11 @@ public class IFCClosedShell : IIFCConnectedFaceSet
 /// </summary>
 public class IFCOpenShell : IIFCConnectedFaceSet
 {
-    public IFCOpenShell(IFCEntity e)
+    public IFCOpenShell(IFCEntity e) : base(e)
     {
         AddKey("CfsFaces", typeof(List<uint>));
 
-        SetVariables(e);
+        //SetVariables(e);
     }
 }
 #endregion
@@ -836,6 +895,7 @@ public class IFCOpenShell : IIFCConnectedFaceSet
 /// </summary>
 public abstract class IIFCNamedUnit : IFCEntity
 {
+    protected IIFCNamedUnit(IFCEntity e) : base(e) { }
 }
 
 /// <summary>
@@ -846,14 +906,14 @@ public abstract class IIFCNamedUnit : IFCEntity
 /// </summary>
 public class IFCSIUnit : IIFCNamedUnit
 {
-    public IFCSIUnit(IFCEntity e)
+    public IFCSIUnit(IFCEntity e) : base(e)
     {
         AddKey("Dimensions", typeof(uint));
         AddKey("UnitType", typeof(IFCUnitEnum));
         AddKey("Prefix", typeof(IFCSIPrefix));
         AddKey("Name", typeof(IFCSIUnitName));
 
-        SetVariables(e);
+        //SetVariables(e);
     }
 }
 #endregion
@@ -864,6 +924,7 @@ public class IFCSIUnit : IIFCNamedUnit
 /// </summary>
 public abstract class IIFCBuildingElement : IFCEntity
 {
+    protected IIFCBuildingElement(IFCEntity e) : base(e) { }
 }
 
 /// <summary>
@@ -879,7 +940,7 @@ public abstract class IIFCBuildingElement : IFCEntity
 /// </summary>
 public class IFCBuildingElementProxy : IIFCBuildingElement
 {
-    public IFCBuildingElementProxy(IFCEntity e)
+    public IFCBuildingElementProxy(IFCEntity e) : base(e)
     {
         AddKey("GlobalId", typeof(string));
         AddKey("OwnerHistory", typeof(uint));
@@ -891,7 +952,7 @@ public class IFCBuildingElementProxy : IIFCBuildingElement
         AddKey("Tag", typeof(string));
         AddKey("PredefinedType", typeof(IFCBuildingElementProxyTypeEnum));
 
-        SetVariables(e);
+        //SetVariables(e);
     }
 }
 #endregion
@@ -902,6 +963,7 @@ public class IFCBuildingElementProxy : IIFCBuildingElement
 /// </summary>
 public abstract class IIFCObjectPlacement : IFCEntity
 {
+    protected IIFCObjectPlacement(IFCEntity e) : base (e) { }
 }
 
 /// <summary>
@@ -910,12 +972,12 @@ public abstract class IIFCObjectPlacement : IFCEntity
 /// </summary>
 public class IFCLocalPlacement : IIFCObjectPlacement
 {
-    public IFCLocalPlacement(IFCEntity e)
+    public IFCLocalPlacement(IFCEntity e) : base(e)
     {
         AddKey("PlacementRelTo", typeof(uint));
         AddKey("RelativePlacement", typeof(uint));
 
-        SetVariables(e);
+        //SetVariables(e);
     }
 }
 #endregion
@@ -927,6 +989,7 @@ public class IFCLocalPlacement : IIFCObjectPlacement
 /// </summary>
 public abstract class IIFCPlacement : IFCEntity
 {
+    protected IIFCPlacement(IFCEntity e) : base(e) { }
 }
 
 /// <summary>
@@ -935,12 +998,12 @@ public abstract class IIFCPlacement : IFCEntity
 /// </summary>
 public class IFCAxis2Placement2D : IIFCPlacement
 {
-    public IFCAxis2Placement2D(IFCEntity e)
+    public IFCAxis2Placement2D(IFCEntity e) : base(e)
     {
         AddKey("Location", typeof(uint));
         AddKey("RefDirection", typeof(uint));
 
-        SetVariables(e);
+        //SetVariables(e);
     }
 }
 
@@ -951,13 +1014,13 @@ public class IFCAxis2Placement2D : IIFCPlacement
 /// </summary>
 public class IFCAxis2Placement3D : IIFCPlacement
 {
-    public IFCAxis2Placement3D(IFCEntity e)
+    public IFCAxis2Placement3D(IFCEntity e) : base(e)
     {
         AddKey("Location", typeof(uint));
         AddKey("Axis", typeof(uint));
         AddKey("RefDirection", typeof(uint));
 
-        SetVariables(e);
+        //SetVariables(e);
     }
 }
 #endregion
@@ -969,6 +1032,7 @@ public class IFCAxis2Placement3D : IIFCPlacement
 /// </summary>
 public abstract class IIFCRepresentationContext : IFCEntity
 {
+    protected IIFCRepresentationContext(IFCEntity e) : base(e) { }
 }
 
 /// <summary>
@@ -981,7 +1045,7 @@ public abstract class IIFCRepresentationContext : IFCEntity
 /// </summary>
 public class IFCGeometricRepresentationContext : IIFCRepresentationContext
 {
-    public IFCGeometricRepresentationContext(IFCEntity e)
+    public IFCGeometricRepresentationContext(IFCEntity e) : base(e)
     {
         AddKey("ContextIdentifier", typeof(string));
         AddKey("ContextType", typeof(string));
@@ -990,7 +1054,7 @@ public class IFCGeometricRepresentationContext : IIFCRepresentationContext
         AddKey("WorldCoordinateSystem", typeof(uint));
         AddKey("TrueNorth", typeof(uint));
 
-        SetVariables(e);
+        //SetVariables(e);
     }
 }
 
@@ -1008,7 +1072,7 @@ public class IFCGeometricRepresentationContext : IIFCRepresentationContext
 /// </summary>
 public class IFCGeometricRepresentationSubContext : IIFCRepresentationContext
 {
-    public IFCGeometricRepresentationSubContext(IFCEntity e)
+    public IFCGeometricRepresentationSubContext(IFCEntity e) : base(e)
     {
         AddKey("ContextIdentifier", typeof(string));
         AddKey("ContextType", typeof(string));
@@ -1021,7 +1085,7 @@ public class IFCGeometricRepresentationSubContext : IIFCRepresentationContext
         AddKey("TargetView", typeof(IFCGeometricProjectionEnum));
         AddKey("UserDefinedTargetView", typeof(string));
 
-        SetVariables(e);
+        //SetVariables(e);
     }
 }
 #endregion
@@ -1032,6 +1096,7 @@ public class IFCGeometricRepresentationSubContext : IIFCRepresentationContext
 /// </summary>
 public abstract class IIFCRelConnects : IFCEntity
 {
+    protected IIFCRelConnects(IFCEntity e) : base(e) { }
 }
 
 /// <summary>
@@ -1044,7 +1109,7 @@ public abstract class IIFCRelConnects : IFCEntity
 /// </summary>
 public class IFCRelContainedInSpatialStructure : IIFCRelConnects
 {
-    public IFCRelContainedInSpatialStructure(IFCEntity e)
+    public IFCRelContainedInSpatialStructure(IFCEntity e) : base(e)
     {
         AddKey("GlobalId", typeof(string));
         AddKey("OwnerHistory", typeof(uint));
@@ -1053,7 +1118,7 @@ public class IFCRelContainedInSpatialStructure : IIFCRelConnects
         AddKey("RelatedElements", typeof(List<uint>));
         AddKey("RelatingStructure", typeof(List<uint>));
 
-        SetVariables(e);
+        //SetVariables(e);
     }
 }
 #endregion
@@ -1064,6 +1129,7 @@ public class IFCRelContainedInSpatialStructure : IIFCRelConnects
 /// </summary>
 public abstract class IIFCManifoldSolidBrep : IFCEntity
 {
+    protected IIFCManifoldSolidBrep(IFCEntity e) : base(e) { }
 }
 
 /// <summary>
@@ -1071,11 +1137,11 @@ public abstract class IIFCManifoldSolidBrep : IFCEntity
 /// </summary>
 public class IFCFacetedBrep : IIFCManifoldSolidBrep
 {
-    public IFCFacetedBrep(IFCEntity e)
+    public IFCFacetedBrep(IFCEntity e) : base(e)
     {
         AddKey("Outer", typeof(uint));
 
-        SetVariables(e);
+        //SetVariables(e);
     }
 }
 #endregion
@@ -1086,6 +1152,7 @@ public class IFCFacetedBrep : IIFCManifoldSolidBrep
 /// </summary>
 public abstract class IIFCShapeModel : IFCEntity
 {
+    protected IIFCShapeModel(IFCEntity e) : base(e) { }
 }
 
 /// <summary>
@@ -1096,14 +1163,14 @@ public abstract class IIFCShapeModel : IFCEntity
 /// </summary>
 public class IFCShapeRepresentation : IIFCShapeModel
 {
-    public IFCShapeRepresentation(IFCEntity e)
+    public IFCShapeRepresentation(IFCEntity e) : base(e)
     {
         AddKey("ContextOfItems", typeof(uint));
         AddKey("RepresentationIdentifier", typeof(string));
         AddKey("RepresentationType", typeof(string));
         AddKey("Items", typeof(List<uint>));
 
-        SetVariables(e);
+        //SetVariables(e);
     }
 }
 #endregion
@@ -1114,6 +1181,7 @@ public class IFCShapeRepresentation : IIFCShapeModel
 /// </summary>
 public abstract class IIFCProductRepresentation : IFCEntity
 {
+    protected IIFCProductRepresentation(IFCEntity e) : base(e) { }
 }
 
 /// <summary>
@@ -1123,13 +1191,13 @@ public abstract class IIFCProductRepresentation : IFCEntity
 /// </summary>
 public class IFCProductDefinitionShape : IIFCProductRepresentation
 {
-    public IFCProductDefinitionShape(IFCEntity e)
+    public IFCProductDefinitionShape(IFCEntity e) : base(e)
     {
         AddKey("Name", typeof(string));
         AddKey("Description", typeof(string));
         AddKey("Representations", typeof(List<uint>));
 
-        SetVariables(e);
+        //SetVariables(e);
     }
 }
 #endregion
@@ -1140,6 +1208,7 @@ public class IFCProductDefinitionShape : IIFCProductRepresentation
 /// </summary>
 public abstract class IIFCRelDecomposes : IFCEntity
 {
+    protected IIFCRelDecomposes(IFCEntity e) : base(e) { }
 }
 
 /// <summary>
@@ -1147,17 +1216,21 @@ public abstract class IIFCRelDecomposes : IFCEntity
 /// uint OwnerHistory | 
 /// string Name |
 /// string Description | 
+/// uint RelatingObjects |
+/// List(uint) RelatedObjects |
 /// </summary>
 public class IFCRelAggregates : IIFCRelDecomposes
 {
-    public IFCRelAggregates(IFCEntity e)
+    public IFCRelAggregates(IFCEntity e) : base(e)
     {
         AddKey("GlobalId", typeof(string));
         AddKey("OwnerHistory", typeof(uint));
         AddKey("Name", typeof(string));
         AddKey("Description", typeof(string));
+        AddKey("RelatingObjects", typeof(uint));
+        AddKey("RelatedObjects", typeof(List<uint>));
 
-        SetVariables(e);
+        //SetVariables(e);
     }
 }
 #endregion
@@ -1168,6 +1241,7 @@ public class IFCRelAggregates : IIFCRelDecomposes
 /// </summary>
 public abstract class IIFCSpatialStructureElement : IFCEntity
 {
+    protected IIFCSpatialStructureElement(IFCEntity e) : base(e) { }
 }
 
 /// <summary>
@@ -1186,7 +1260,7 @@ public abstract class IIFCSpatialStructureElement : IFCEntity
 /// </summary>
 public class IFCBuilding : IIFCSpatialStructureElement
 {
-    public IFCBuilding(IFCEntity e)
+    public IFCBuilding(IFCEntity e) : base(e)
     {
         AddKey("GlobalId", typeof(string));
         AddKey("OwnerHistory", typeof(uint));
@@ -1201,7 +1275,7 @@ public class IFCBuilding : IIFCSpatialStructureElement
         AddKey("ElevationOfTerrain", typeof(float));
         AddKey("BuildingAddress", typeof(uint));
 
-        SetVariables(e);
+        //SetVariables(e);
     }
 }
 #endregion
@@ -1215,7 +1289,7 @@ public class IFCBuilding : IIFCSpatialStructureElement
 /// </summary>
 public class IFCMeasureWithUnit : IFCEntity
 {
-    public IFCMeasureWithUnit(IFCEntity e)
+    public IFCMeasureWithUnit(IFCEntity e) : base(e)
     {
         AddKey("ValueComponent", typeof(List<float>));
         AddKey("UnitComponent", typeof(uint));

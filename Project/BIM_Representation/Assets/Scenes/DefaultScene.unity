@@ -337,8 +337,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Files:
-  - E:\School\3DAE4\Semester 5\Graduation Work\TestFiles\House.ifc
-  BatchSize: 1500
+  - E:\School\3DAE4\Semester 5\Graduation Work\TestFiles\Institute.ifc
+  BatchSize: 2000
   DefaultMaterial: {fileID: 2100000, guid: 4329675cb15f23041bdf93607635f7f3, type: 2}
   ParseProgress: {fileID: 913774961}
 --- !u!224 &1780743216
