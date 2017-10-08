@@ -1,0 +1,175 @@
+fileFormatVersion: 2
+guid: f925291f29470f94d88cefcbcc51b5eb
+timeCreated: 1507323906
+licenseType: Free
+ModelImporter:
+  serializedVersion: 21
+  fileIDToRecycleName:
+    100000: Compound Ceiling:187149
+    100002: Compound Ceiling:187149 1
+    100004: Compound Ceiling:187462
+    100006: Compound Ceiling:187462 1
+    100008: Compound Ceiling:187470
+    100010: Compound Ceiling:187470 1
+    100012: Compound Ceiling:187483
+    100014: Compound Ceiling:187483 1
+    100016: Compound Ceiling:187508
+    100018: Compound Ceiling:187508 1
+    100020: Compound Ceiling:187639
+    100022: Compound Ceiling:187639 1
+    100024: Compound Ceiling:187649
+    100026: Compound Ceiling:187649 1
+    100028: Compound Ceiling:187659
+    100030: Compound Ceiling:187659 1
+    100032: Compound Ceiling:187667
+    100034: Compound Ceiling:187667 1
+    100036: Compound Ceiling:187675
+    100038: Compound Ceiling:187675 1
+    100040: Compound Ceiling:187683
+    100042: Compound Ceiling:187683 1
+    100044: Compound Ceiling:187691
+    100046: Compound Ceiling:187691 1
+    100048: Compound Ceiling:187701
+    100050: Compound Ceiling:187701 1
+    100052: //RootNode
+    400000: Compound Ceiling:187149
+    400002: Compound Ceiling:187149 1
+    400004: Compound Ceiling:187462
+    400006: Compound Ceiling:187462 1
+    400008: Compound Ceiling:187470
+    400010: Compound Ceiling:187470 1
+    400012: Compound Ceiling:187483
+    400014: Compound Ceiling:187483 1
+    400016: Compound Ceiling:187508
+    400018: Compound Ceiling:187508 1
+    400020: Compound Ceiling:187639
+    400022: Compound Ceiling:187639 1
+    400024: Compound Ceiling:187649
+    400026: Compound Ceiling:187649 1
+    400028: Compound Ceiling:187659
+    400030: Compound Ceiling:187659 1
+    400032: Compound Ceiling:187667
+    400034: Compound Ceiling:187667 1
+    400036: Compound Ceiling:187675
+    400038: Compound Ceiling:187675 1
+    400040: Compound Ceiling:187683
+    400042: Compound Ceiling:187683 1
+    400044: Compound Ceiling:187691
+    400046: Compound Ceiling:187691 1
+    400048: Compound Ceiling:187701
+    400050: Compound Ceiling:187701 1
+    400052: //RootNode
+    2300000: Compound Ceiling:187149 1
+    2300002: Compound Ceiling:187462 1
+    2300004: Compound Ceiling:187470 1
+    2300006: Compound Ceiling:187483 1
+    2300008: Compound Ceiling:187508 1
+    2300010: Compound Ceiling:187639 1
+    2300012: Compound Ceiling:187649 1
+    2300014: Compound Ceiling:187659 1
+    2300016: Compound Ceiling:187667 1
+    2300018: Compound Ceiling:187675 1
+    2300020: Compound Ceiling:187683 1
+    2300022: Compound Ceiling:187691 1
+    2300024: Compound Ceiling:187701 1
+    3300000: Compound Ceiling:187149 1
+    3300002: Compound Ceiling:187462 1
+    3300004: Compound Ceiling:187470 1
+    3300006: Compound Ceiling:187483 1
+    3300008: Compound Ceiling:187508 1
+    3300010: Compound Ceiling:187639 1
+    3300012: Compound Ceiling:187649 1
+    3300014: Compound Ceiling:187659 1
+    3300016: Compound Ceiling:187667 1
+    3300018: Compound Ceiling:187675 1
+    3300020: Compound Ceiling:187683 1
+    3300022: Compound Ceiling:187691 1
+    3300024: Compound Ceiling:187701 1
+    4300000: Compound Ceiling:187149
+    4300002: Compound Ceiling:187462
+    4300004: Compound Ceiling:187470
+    4300006: Compound Ceiling:187483
+    4300008: Compound Ceiling:187508
+    4300010: Compound Ceiling:187639
+    4300012: Compound Ceiling:187649
+    4300014: Compound Ceiling:187659
+    4300016: Compound Ceiling:187667
+    4300018: Compound Ceiling:187675
+    4300020: Compound Ceiling:187683
+    4300022: Compound Ceiling:187691
+    4300024: Compound Ceiling:187701
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

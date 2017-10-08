@@ -1,0 +1,448 @@
+fileFormatVersion: 2
+guid: 635b4224edacc194fa751e454430202a
+timeCreated: 1507323901
+licenseType: Free
+ModelImporter:
+  serializedVersion: 21
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: M_Single-Flush:146596
+    100004: M_Single-Flush:146596 1
+    100006: M_Single-Flush:146596 2
+    100008: M_Single-Flush:146596 3
+    100010: M_Single-Flush:146596 4
+    100012: M_Single-Flush:146596 5
+    100014: M_Single-Flush:146596 6
+    100016: M_Single-Flush:146596 7
+    100018: M_Single-Flush:146678
+    100020: M_Single-Flush:146678 1
+    100022: M_Single-Flush:146678 2
+    100024: M_Single-Flush:146678 3
+    100026: M_Single-Flush:146678 4
+    100028: M_Single-Flush:146678 5
+    100030: M_Single-Flush:146678 6
+    100032: M_Single-Flush:146678 7
+    100034: M_Single-Flush:150173
+    100036: M_Single-Flush:150173 1
+    100038: M_Single-Flush:150173 2
+    100040: M_Single-Flush:150173 3
+    100042: M_Single-Flush:150173 4
+    100044: M_Single-Flush:150173 5
+    100046: M_Single-Flush:150173 6
+    100048: M_Single-Flush:150173 7
+    100050: M_Single-Flush:150257
+    100052: M_Single-Flush:150257 1
+    100054: M_Single-Flush:150257 2
+    100056: M_Single-Flush:150257 3
+    100058: M_Single-Flush:150257 4
+    100060: M_Single-Flush:150257 5
+    100062: M_Single-Flush:150257 6
+    100064: M_Single-Flush:150257 7
+    100066: M_Single-Flush:150378
+    100068: M_Single-Flush:150378 1
+    100070: M_Single-Flush:150378 2
+    100072: M_Single-Flush:150378 3
+    100074: M_Single-Flush:150378 4
+    100076: M_Single-Flush:150378 5
+    100078: M_Single-Flush:150378 6
+    100080: M_Single-Flush:150378 7
+    100082: M_Single-Flush:150478
+    100084: M_Single-Flush:150478 1
+    100086: M_Single-Flush:150478 2
+    100088: M_Single-Flush:150478 3
+    100090: M_Single-Flush:150478 4
+    100092: M_Single-Flush:150478 5
+    100094: M_Single-Flush:150478 6
+    100096: M_Single-Flush:150478 7
+    100098: M_Single-Flush:159734
+    100100: M_Single-Flush:159734 1
+    100102: M_Single-Flush:159734 2
+    100104: M_Single-Flush:159734 3
+    100106: M_Single-Flush:159734 4
+    100108: M_Single-Flush:159734 5
+    100110: M_Single-Flush:159734 6
+    100112: M_Single-Flush:159734 7
+    100114: M_Single-Flush:159834
+    100116: M_Single-Flush:159834 1
+    100118: M_Single-Flush:159834 2
+    100120: M_Single-Flush:159834 3
+    100122: M_Single-Flush:159834 4
+    100124: M_Single-Flush:159834 5
+    100126: M_Single-Flush:159834 6
+    100128: M_Single-Flush:159834 7
+    100130: M_Single-Flush:160065
+    100132: M_Single-Flush:160065 1
+    100134: M_Single-Flush:160065 2
+    100136: M_Single-Flush:160065 3
+    100138: M_Single-Flush:160065 4
+    100140: M_Single-Flush:160065 5
+    100142: M_Single-Flush:160065 6
+    100144: M_Single-Flush:160065 7
+    100146: M_Single-Flush:160208
+    100148: M_Single-Flush:160208 1
+    100150: M_Single-Flush:160208 2
+    100152: M_Single-Flush:160208 3
+    100154: M_Single-Flush:160208 4
+    100156: M_Single-Flush:160208 5
+    100158: M_Single-Flush:160208 6
+    100160: M_Single-Flush:160208 7
+    100162: M_Single-Flush:203720
+    100164: M_Single-Flush:203720 1
+    100166: M_Single-Flush:203720 2
+    100168: M_Single-Flush:203720 3
+    100170: M_Single-Flush:203720 4
+    100172: M_Single-Flush:203720 5
+    100174: M_Single-Flush:203720 6
+    100176: M_Single-Flush:203720 7
+    100178: M_Single-Flush:204034
+    100180: M_Single-Flush:204034 1
+    100182: M_Single-Flush:204034 2
+    100184: M_Single-Flush:204034 3
+    100186: M_Single-Flush:204034 4
+    100188: M_Single-Flush:204034 5
+    100190: M_Single-Flush:204034 6
+    100192: M_Single-Flush:204034 7
+    100194: M_Single-Glass 1:171853
+    100196: M_Single-Glass 1:171853 1
+    100198: M_Single-Glass 1:171853 2
+    100200: M_Single-Glass 1:171853 3
+    100202: M_Single-Glass 1:171853 4
+    100204: M_Single-Glass 1:171853 5
+    100206: M_Single-Glass 1:171853 6
+    100208: M_Single-Glass 1:171853 7
+    100210: M_Single-Glass 1:171853 8
+    100212: M_Single-Glass 1:171853 9
+    100214: M_Single-Glass 1:171975
+    100216: M_Single-Glass 1:171975 1
+    100218: M_Single-Glass 1:171975 2
+    100220: M_Single-Glass 1:171975 3
+    100222: M_Single-Glass 1:171975 4
+    100224: M_Single-Glass 1:171975 5
+    100226: M_Single-Glass 1:171975 6
+    100228: M_Single-Glass 1:171975 7
+    100230: M_Single-Glass 1:171975 8
+    100232: M_Single-Glass 1:171975 9
+    400000: //RootNode
+    400002: M_Single-Flush:146596
+    400004: M_Single-Flush:146596 1
+    400006: M_Single-Flush:146596 2
+    400008: M_Single-Flush:146596 3
+    400010: M_Single-Flush:146596 4
+    400012: M_Single-Flush:146596 5
+    400014: M_Single-Flush:146596 6
+    400016: M_Single-Flush:146596 7
+    400018: M_Single-Flush:146678
+    400020: M_Single-Flush:146678 1
+    400022: M_Single-Flush:146678 2
+    400024: M_Single-Flush:146678 3
+    400026: M_Single-Flush:146678 4
+    400028: M_Single-Flush:146678 5
+    400030: M_Single-Flush:146678 6
+    400032: M_Single-Flush:146678 7
+    400034: M_Single-Flush:150173
+    400036: M_Single-Flush:150173 1
+    400038: M_Single-Flush:150173 2
+    400040: M_Single-Flush:150173 3
+    400042: M_Single-Flush:150173 4
+    400044: M_Single-Flush:150173 5
+    400046: M_Single-Flush:150173 6
+    400048: M_Single-Flush:150173 7
+    400050: M_Single-Flush:150257
+    400052: M_Single-Flush:150257 1
+    400054: M_Single-Flush:150257 2
+    400056: M_Single-Flush:150257 3
+    400058: M_Single-Flush:150257 4
+    400060: M_Single-Flush:150257 5
+    400062: M_Single-Flush:150257 6
+    400064: M_Single-Flush:150257 7
+    400066: M_Single-Flush:150378
+    400068: M_Single-Flush:150378 1
+    400070: M_Single-Flush:150378 2
+    400072: M_Single-Flush:150378 3
+    400074: M_Single-Flush:150378 4
+    400076: M_Single-Flush:150378 5
+    400078: M_Single-Flush:150378 6
+    400080: M_Single-Flush:150378 7
+    400082: M_Single-Flush:150478
+    400084: M_Single-Flush:150478 1
+    400086: M_Single-Flush:150478 2
+    400088: M_Single-Flush:150478 3
+    400090: M_Single-Flush:150478 4
+    400092: M_Single-Flush:150478 5
+    400094: M_Single-Flush:150478 6
+    400096: M_Single-Flush:150478 7
+    400098: M_Single-Flush:159734
+    400100: M_Single-Flush:159734 1
+    400102: M_Single-Flush:159734 2
+    400104: M_Single-Flush:159734 3
+    400106: M_Single-Flush:159734 4
+    400108: M_Single-Flush:159734 5
+    400110: M_Single-Flush:159734 6
+    400112: M_Single-Flush:159734 7
+    400114: M_Single-Flush:159834
+    400116: M_Single-Flush:159834 1
+    400118: M_Single-Flush:159834 2
+    400120: M_Single-Flush:159834 3
+    400122: M_Single-Flush:159834 4
+    400124: M_Single-Flush:159834 5
+    400126: M_Single-Flush:159834 6
+    400128: M_Single-Flush:159834 7
+    400130: M_Single-Flush:160065
+    400132: M_Single-Flush:160065 1
+    400134: M_Single-Flush:160065 2
+    400136: M_Single-Flush:160065 3
+    400138: M_Single-Flush:160065 4
+    400140: M_Single-Flush:160065 5
+    400142: M_Single-Flush:160065 6
+    400144: M_Single-Flush:160065 7
+    400146: M_Single-Flush:160208
+    400148: M_Single-Flush:160208 1
+    400150: M_Single-Flush:160208 2
+    400152: M_Single-Flush:160208 3
+    400154: M_Single-Flush:160208 4
+    400156: M_Single-Flush:160208 5
+    400158: M_Single-Flush:160208 6
+    400160: M_Single-Flush:160208 7
+    400162: M_Single-Flush:203720
+    400164: M_Single-Flush:203720 1
+    400166: M_Single-Flush:203720 2
+    400168: M_Single-Flush:203720 3
+    400170: M_Single-Flush:203720 4
+    400172: M_Single-Flush:203720 5
+    400174: M_Single-Flush:203720 6
+    400176: M_Single-Flush:203720 7
+    400178: M_Single-Flush:204034
+    400180: M_Single-Flush:204034 1
+    400182: M_Single-Flush:204034 2
+    400184: M_Single-Flush:204034 3
+    400186: M_Single-Flush:204034 4
+    400188: M_Single-Flush:204034 5
+    400190: M_Single-Flush:204034 6
+    400192: M_Single-Flush:204034 7
+    400194: M_Single-Glass 1:171853
+    400196: M_Single-Glass 1:171853 1
+    400198: M_Single-Glass 1:171853 2
+    400200: M_Single-Glass 1:171853 3
+    400202: M_Single-Glass 1:171853 4
+    400204: M_Single-Glass 1:171853 5
+    400206: M_Single-Glass 1:171853 6
+    400208: M_Single-Glass 1:171853 7
+    400210: M_Single-Glass 1:171853 8
+    400212: M_Single-Glass 1:171853 9
+    400214: M_Single-Glass 1:171975
+    400216: M_Single-Glass 1:171975 1
+    400218: M_Single-Glass 1:171975 2
+    400220: M_Single-Glass 1:171975 3
+    400222: M_Single-Glass 1:171975 4
+    400224: M_Single-Glass 1:171975 5
+    400226: M_Single-Glass 1:171975 6
+    400228: M_Single-Glass 1:171975 7
+    400230: M_Single-Glass 1:171975 8
+    400232: M_Single-Glass 1:171975 9
+    2300000: M_Single-Flush:146596 5
+    2300002: M_Single-Flush:146596 6
+    2300004: M_Single-Flush:146596 7
+    2300006: M_Single-Flush:146678 5
+    2300008: M_Single-Flush:146678 6
+    2300010: M_Single-Flush:146678 7
+    2300012: M_Single-Flush:150173 5
+    2300014: M_Single-Flush:150173 6
+    2300016: M_Single-Flush:150173 7
+    2300018: M_Single-Flush:150257 5
+    2300020: M_Single-Flush:150257 6
+    2300022: M_Single-Flush:150257 7
+    2300024: M_Single-Flush:150378 5
+    2300026: M_Single-Flush:150378 6
+    2300028: M_Single-Flush:150378 7
+    2300030: M_Single-Flush:150478 5
+    2300032: M_Single-Flush:150478 6
+    2300034: M_Single-Flush:150478 7
+    2300036: M_Single-Flush:159734 5
+    2300038: M_Single-Flush:159734 6
+    2300040: M_Single-Flush:159734 7
+    2300042: M_Single-Flush:159834 5
+    2300044: M_Single-Flush:159834 6
+    2300046: M_Single-Flush:159834 7
+    2300048: M_Single-Flush:160065 5
+    2300050: M_Single-Flush:160065 6
+    2300052: M_Single-Flush:160065 7
+    2300054: M_Single-Flush:160208 5
+    2300056: M_Single-Flush:160208 6
+    2300058: M_Single-Flush:160208 7
+    2300060: M_Single-Flush:203720 5
+    2300062: M_Single-Flush:203720 6
+    2300064: M_Single-Flush:203720 7
+    2300066: M_Single-Flush:204034 5
+    2300068: M_Single-Flush:204034 6
+    2300070: M_Single-Flush:204034 7
+    2300072: M_Single-Glass 1:171853 6
+    2300074: M_Single-Glass 1:171853 7
+    2300076: M_Single-Glass 1:171853 8
+    2300078: M_Single-Glass 1:171853 9
+    2300080: M_Single-Glass 1:171975 6
+    2300082: M_Single-Glass 1:171975 7
+    2300084: M_Single-Glass 1:171975 8
+    2300086: M_Single-Glass 1:171975 9
+    3300000: M_Single-Flush:146596 5
+    3300002: M_Single-Flush:146596 6
+    3300004: M_Single-Flush:146596 7
+    3300006: M_Single-Flush:146678 5
+    3300008: M_Single-Flush:146678 6
+    3300010: M_Single-Flush:146678 7
+    3300012: M_Single-Flush:150173 5
+    3300014: M_Single-Flush:150173 6
+    3300016: M_Single-Flush:150173 7
+    3300018: M_Single-Flush:150257 5
+    3300020: M_Single-Flush:150257 6
+    3300022: M_Single-Flush:150257 7
+    3300024: M_Single-Flush:150378 5
+    3300026: M_Single-Flush:150378 6
+    3300028: M_Single-Flush:150378 7
+    3300030: M_Single-Flush:150478 5
+    3300032: M_Single-Flush:150478 6
+    3300034: M_Single-Flush:150478 7
+    3300036: M_Single-Flush:159734 5
+    3300038: M_Single-Flush:159734 6
+    3300040: M_Single-Flush:159734 7
+    3300042: M_Single-Flush:159834 5
+    3300044: M_Single-Flush:159834 6
+    3300046: M_Single-Flush:159834 7
+    3300048: M_Single-Flush:160065 5
+    3300050: M_Single-Flush:160065 6
+    3300052: M_Single-Flush:160065 7
+    3300054: M_Single-Flush:160208 5
+    3300056: M_Single-Flush:160208 6
+    3300058: M_Single-Flush:160208 7
+    3300060: M_Single-Flush:203720 5
+    3300062: M_Single-Flush:203720 6
+    3300064: M_Single-Flush:203720 7
+    3300066: M_Single-Flush:204034 5
+    3300068: M_Single-Flush:204034 6
+    3300070: M_Single-Flush:204034 7
+    3300072: M_Single-Glass 1:171853 6
+    3300074: M_Single-Glass 1:171853 7
+    3300076: M_Single-Glass 1:171853 8
+    3300078: M_Single-Glass 1:171853 9
+    3300080: M_Single-Glass 1:171975 6
+    3300082: M_Single-Glass 1:171975 7
+    3300084: M_Single-Glass 1:171975 8
+    3300086: M_Single-Glass 1:171975 9
+    4300000: M_Single-Glass 1:171853
+    4300002: M_Single-Glass 1:171853
+    4300004: M_Single-Glass 1:171853
+    4300006: M_Single-Glass 1:171853
+    4300008: M_Single-Flush:146596
+    4300010: M_Single-Flush:146596
+    4300012: M_Single-Flush:146596
+    4300014: M_Single-Glass 1:171975
+    4300016: M_Single-Glass 1:171975
+    4300018: M_Single-Glass 1:171975
+    4300020: M_Single-Glass 1:171975
+    4300022: M_Single-Flush:146678
+    4300024: M_Single-Flush:146678
+    4300026: M_Single-Flush:146678
+    4300028: M_Single-Flush:150257
+    4300030: M_Single-Flush:150257
+    4300032: M_Single-Flush:150257
+    4300034: M_Single-Flush:150173
+    4300036: M_Single-Flush:150173
+    4300038: M_Single-Flush:150173
+    4300040: M_Single-Flush:150378
+    4300042: M_Single-Flush:150378
+    4300044: M_Single-Flush:150378
+    4300046: M_Single-Flush:150478
+    4300048: M_Single-Flush:150478
+    4300050: M_Single-Flush:150478
+    4300052: M_Single-Flush:160065
+    4300054: M_Single-Flush:160065
+    4300056: M_Single-Flush:160065
+    4300058: M_Single-Flush:159734
+    4300060: M_Single-Flush:159734
+    4300062: M_Single-Flush:159734
+    4300064: M_Single-Flush:160208
+    4300066: M_Single-Flush:160208
+    4300068: M_Single-Flush:160208
+    4300070: M_Single-Flush:159834
+    4300072: M_Single-Flush:159834
+    4300074: M_Single-Flush:159834
+    4300076: M_Single-Flush:203720
+    4300078: M_Single-Flush:203720
+    4300080: M_Single-Flush:203720
+    4300082: M_Single-Flush:204034
+    4300084: M_Single-Flush:204034
+    4300086: M_Single-Flush:204034
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

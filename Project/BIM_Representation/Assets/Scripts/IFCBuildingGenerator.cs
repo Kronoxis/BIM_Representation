@@ -97,8 +97,8 @@ public class IFCBuildingGenerator : MonoBehaviour
             }
             // Get elapsed time
             var elapsedSecs = (DateTime.Now - _startTime).TotalMilliseconds / 1000;
-            var avgSpeed = (long) (parsedBytes / elapsedSecs);
-            var percent = (float) parsedBytes / _byteCount * 100;
+            var avgSpeed = (long)(parsedBytes / elapsedSecs);
+            var percent = (float)parsedBytes / _byteCount * 100;
             var fps = 1 / Time.deltaTime;
             // Set end text
             ProgressText.text += "\nElapsed Time: " + elapsedSecs.ToString("0") + " seconds.";
@@ -140,12 +140,38 @@ public class IFCBuildingGenerator : MonoBehaviour
     {
         while (IFCDataManager.IsParsing()) yield return 0;
 
-        IFCDataManager.GetAllData().ForEach(x =>
+        IFCDataManager.GetAllData().ForEach(container =>
         {
-            var scale = GetScale(x);
-            Dictionary<uint, GameObject> parents = new Dictionary<uint, GameObject>();
-            parents.Add(CreateBuilding(x, scale));
-            CreateMeshes(x.GetEntities<IIFCConnectedFaceSet>(true), x, parents);
+            var goBuilding = CreateBuilding(container);
+            foreach (var element in container.GetEntities<IIFCBuildingElement>(true))
+            {
+                var goBuildingElement = CreateBuildingElement(element, goBuilding.transform);
+                var buildingElementRepresentation = element.GetReference("Representation");
+                if (buildingElementRepresentation == null) continue;
+                var buildingElementRepresentations = buildingElementRepresentation.GetProperty("Representations").AsList().AsIds();
+                foreach (var representation in container.GetEntities(buildingElementRepresentations))
+                {
+                    var goRepresentation = CreateRepresentation((IIFCRepresentation)representation, goBuildingElement.transform);
+                    var items = representation.GetProperty("Items").AsList().AsIds();
+                    foreach (var item in items)
+                    {
+                        var itemEntity = container.GetEntity(item);
+                        if (itemEntity.Is<IIFCManifoldSolidBrep>(true))
+                        {
+                            CreateMesh((IIFCManifoldSolidBrep)itemEntity, goRepresentation.transform);
+                        }
+                        else if (itemEntity.Is<IFCMappedItem>(true))
+                        {
+                            var source = itemEntity.GetReference<IFCRepresentationMap>("MappingSource");
+                            //var target = itemEntity.GetReference("MappingTarget");
+                            var mappedRepresentations = source.GetReference<IIFCRepresentation>("MappedRepresentation")
+                                .GetProperty("Representations").AsList().AsIds();
+                            foreach (var mappedRepresentation in container.GetEntities(mappedRepresentations))
+                                CreateRepresentation((IIFCRepresentation)mappedRepresentation, goRepresentation.transform);
+                        }
+                    }
+                }
+            }
         });
     }
 
@@ -162,57 +188,78 @@ public class IFCBuildingGenerator : MonoBehaviour
         return scale;
     }
 
-    private KeyValuePair<uint, GameObject> CreateBuilding(IFCDataContainer container, float scale)
+    private GameObject CreateGameObject(IFCEntity e, string goName, Transform parent, Vector3 pos, Vector3 rot, float scale)
     {
         GameObject go = new GameObject();
+        go.AddComponent<Metadata>().SetMetadata(e);
+        go.name = goName;
+        go.transform.SetParent(parent, false);
+        go.transform.Translate(pos);
+        go.transform.Rotate(rot);
+        go.transform.localScale.Set(scale, scale, scale);
+        return go;
+    }
+
+    #region Layer Creation
+    private GameObject CreateBuilding(IFCDataContainer container)
+    {
         var buildings = container.GetEntities<IFCBuilding>(false);
-        uint id = 0;
+        IFCBuilding building = null;
+        var goName = "";
+        var pos = new Vector3(0, 0, 0);
+        var rot = new Vector3(-90, 0, 0); // Resolve misaligned axis (Z-up instead of Y-up)
+        var scale = GetScale(container);
+
         if (buildings.Count > 0)
         {
-            var building = buildings[0];
-            go.AddComponent<Metadata>().SetMetadata(building);
-            id = building.Id;
-            go.name = building.GetProperty("Name").AsString() + " (" + building.GetProperty("GlobalId").AsString() +
-                      ")";
+            building = buildings[0];
+            goName = building.GetProperty("Name").AsString() + " (" + building.GetProperty("GlobalId").AsString() +
+                     ")";
             var coords = building.GetReference("ObjectPlacement").GetReference("RelativePlacement")
                 .GetReference("Location").GetProperty("Coordinates").AsList();
-            Vector3 pos = new Vector3(coords[0].AsFloat(), coords[1].AsFloat(), coords[2].AsFloat());
-            go.transform.Translate(pos);
+            pos = new Vector3(coords[0].AsFloat(), coords[1].AsFloat(), coords[2].AsFloat());
         }
         else
         {
-            go.name = "Missing IFCBuilding!";
+            goName = "Missing IFCBuilding!";
         }
-        // Resolve misaligned axis (Z-up instead of Y-up)
-        go.transform.Rotate(new Vector3(-90, 0, 0));
-        // Set Scale
-        go.transform.localScale = new Vector3(scale, scale, scale);
-        return new KeyValuePair<uint, GameObject>(id, go);
+        return CreateGameObject(building, goName, null, pos, rot, scale);
     }
 
-    private List<GameObject> CreateBuildingElements(IFCDataContainer container, Dictionary<uint, GameObject> parents)
+    private GameObject CreateBuildingElement(IIFCBuildingElement element, Transform parent)
     {
-        List<GameObject> gos = new List<GameObject>();
-        GameObject go = new GameObject();
-        var elements = container.GetEntities<IIFCBuildingElement>(true);
-        return gos;
+        var globalId = element.GetProperty("GlobalId").AsString();
+        var elemName = element.GetProperty("Name").AsString();
+        var goName = elemName + " (" + globalId + ")";
+        var coords = element.GetReference("ObjectPlacement").GetReference("RelativePlacement")
+            .GetReference("Location").GetProperty("Coordinates").AsList();
+        Vector3 pos = new Vector3(coords[0].AsFloat(),
+            coords[1].AsFloat(), coords[2].AsFloat());
+        return CreateGameObject(element, goName, parent, pos, new Vector3(0, 0, 0), 1);
     }
+
+    private GameObject CreateRepresentation(IIFCRepresentation representation, Transform parent)
+    {
+        var context = representation.GetReference("ContextOfItems");
+        while (context.Is<IFCGeometricRepresentationSubContext>(false))
+            context = context.GetReference("ParentContext");
+        var axis = context.GetReference("WorldCoordinateSystem");
+        var coords = axis.GetReference("Location").GetProperty("Coordinates").AsList();
+        var pos = new Vector3(coords[0].AsFloat(), coords[1].AsFloat(), coords[2].AsFloat());
+        var idName = representation.GetProperty("RepresentationIdentifier").AsString();
+        var type = representation.GetProperty("RepresentationType").AsString();
+        var goName = idName + " (" + type + ")";
+        return CreateGameObject(representation, goName, parent, pos, new Vector3(0, 0, 0), 1);
+    }
+    #endregion
 
     #region Mesh Creation
-    private void CreateMeshes(List<IIFCConnectedFaceSet> geometrySets, IFCDataContainer container, Dictionary<uint, GameObject> parents)
+    private void CreateMesh(IIFCManifoldSolidBrep brep, Transform parent)
     {
-        foreach (var geometrySet in geometrySets)
-            CreateMesh(geometrySet, container, parents);
-    }
-
-    private void CreateMesh(IIFCConnectedFaceSet geometrySet, IFCDataContainer container, Dictionary<uint, GameObject> parents)
-    {
-        // Find correct parrent
-
         // Create GameObject
         var go = new GameObject();
-        go.transform.SetParent(parents.First().Value.transform, false);
-        go.name = geometrySet.Id.ToString();
+        go.transform.SetParent(parent, false);
+        go.name = brep.Id.ToString();
 
         // Add Mesh Filter
         var mf = go.AddComponent<MeshFilter>();
@@ -221,7 +268,7 @@ public class IFCBuildingGenerator : MonoBehaviour
         List<int> indices;
         List<Vector3> normals;
         List<Vector2> uvs;
-        CreateBuffers(geometrySet, out vertices, out indices, out normals, out uvs);
+        CreateBuffers(brep.GetReference<IIFCConnectedFaceSet>("Outer"), out vertices, out indices, out normals, out uvs);
         mf.mesh.vertices = vertices.ToArray();
         mf.mesh.triangles = indices.ToArray();
         mf.mesh.normals = normals.ToArray();
@@ -233,7 +280,7 @@ public class IFCBuildingGenerator : MonoBehaviour
         mr.material = DefaultMaterial;
 
         // Add Metadata
-        go.AddComponent<Metadata>().SetMetadata(geometrySet);
+        go.AddComponent<Metadata>().SetMetadata(brep);
     }
 
     public void CreateBuffers(IIFCConnectedFaceSet geometrySet,
@@ -245,15 +292,15 @@ public class IFCBuildingGenerator : MonoBehaviour
         uvs = new List<Vector2>();
 
         var container = IFCDataManager.GetDataContainer(geometrySet.File);
-        foreach (var face in geometrySet.GetProperty("CfsFaces").AsList())
+        foreach (var face in geometrySet.GetProperty("CfsFaces").AsList().AsIds())
         {
-            foreach (var bound in container.GetEntity(face.AsId()).GetProperty("Bounds").AsList())
+            foreach (var bound in container.GetEntity(face).GetProperty("Bounds").AsList().AsIds())
             {
-                var loopId = container.GetEntity(bound.AsId()).GetProperty("Bound").AsId();
+                var loopId = container.GetEntity(bound).GetProperty("Bound").AsId();
                 List<Vector3> vertsFromLoop = new List<Vector3>();
-                foreach (var point in container.GetEntity(loopId).GetProperty("Polygon").AsList())
+                foreach (var point in container.GetEntity(loopId).GetProperty("Polygon").AsList().AsIds())
                 {
-                    var coords = container.GetEntity(point.AsId()).GetProperty("Coordinates").AsList();
+                    var coords = container.GetEntity(point).GetProperty("Coordinates").AsList();
                     vertsFromLoop.Add(new Vector3(coords[0].AsFloat(), coords[1].AsFloat(), coords[2].AsFloat()));
                 }
                 AddToBuffer(vertsFromLoop, ref vertices, ref indices, ref normals, ref uvs);

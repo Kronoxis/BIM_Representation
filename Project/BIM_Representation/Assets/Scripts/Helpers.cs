@@ -65,6 +65,16 @@ public static class Helpers
         return SplitProperties(s, delim);
     }
 
+    public static List<uint> AsIds(this List<string> l)
+    {
+        List<uint> toRet = new List<uint>();
+        foreach (var s in l)
+        {
+            toRet.Add(s.AsId());
+        }
+        return toRet;
+    }
+
     public static List<string> SplitProperties(string s, char delim)
     {
         List<string> properties = new List<string>();

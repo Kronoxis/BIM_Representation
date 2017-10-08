@@ -1,0 +1,210 @@
+fileFormatVersion: 2
+guid: 18844dda5382da54cb6bbd4f323d015a
+timeCreated: 1507323893
+licenseType: Free
+ModelImporter:
+  serializedVersion: 21
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: M_Backflow Preventer_ DCW to Hydronic Supply_15-50 mm_:591225
+    100004: M_Backflow Preventer_ DCW to Hydronic Supply_15-50 mm_:591225 1
+    100006: M_Backflow Preventer_ DCW to Hydronic Supply_15-50 mm_:591225 2
+    100008: M_Backflow Preventer_ DCW to Hydronic Supply_15-50 mm_:593194
+    100010: M_Backflow Preventer_ DCW to Hydronic Supply_15-50 mm_:593194 1
+    100012: M_Backflow Preventer_ DCW to Hydronic Supply_15-50 mm_:593194 2
+    100014: M_Backflow Preventer_ DCW to Hydronic Supply_15-50 mm_:593973
+    100016: M_Backflow Preventer_ DCW to Hydronic Supply_15-50 mm_:593973 1
+    100018: M_Backflow Preventer_ DCW to Hydronic Supply_15-50 mm_:593973 2
+    100020: M_Backflow Preventer_ DCW to Hydronic Supply_15-50 mm_:594130
+    100022: M_Backflow Preventer_ DCW to Hydronic Supply_15-50 mm_:594130 1
+    100024: M_Backflow Preventer_ DCW to Hydronic Supply_15-50 mm_:594130 2
+    100026: M_Ball Valve - 50-150 mm:578433
+    100028: M_Ball Valve - 50-150 mm:578433 1
+    100030: M_Ball Valve - 50-150 mm:578433 2
+    100032: M_Ball Valve - 50-150 mm:578607
+    100034: M_Ball Valve - 50-150 mm:578607 1
+    100036: M_Ball Valve - 50-150 mm:578607 2
+    100038: M_Ball Valve - 50-150 mm:579237
+    100040: M_Ball Valve - 50-150 mm:579237 1
+    100042: M_Ball Valve - 50-150 mm:579237 2
+    100044: M_Ball Valve - 50-150 mm:579260
+    100046: M_Ball Valve - 50-150 mm:579260 1
+    100048: M_Ball Valve - 50-150 mm:579260 2
+    100050: M_Smoke Detector:610280
+    100052: M_Smoke Detector:610280 1
+    100054: M_Smoke Detector:610280 2
+    100056: M_Smoke Detector:610319
+    100058: M_Smoke Detector:610319 1
+    100060: M_Smoke Detector:610319 2
+    100062: M_Smoke Detector:610426
+    100064: M_Smoke Detector:610426 1
+    100066: M_Smoke Detector:610426 2
+    100068: M_Smoke Detector:610469
+    100070: M_Smoke Detector:610469 1
+    100072: M_Smoke Detector:610469 2
+    100074: M_Smoke Detector:610482
+    100076: M_Smoke Detector:610482 1
+    100078: M_Smoke Detector:610482 2
+    100080: M_Smoke Detector:610550
+    100082: M_Smoke Detector:610550 1
+    100084: M_Smoke Detector:610550 2
+    400000: //RootNode
+    400002: M_Backflow Preventer_ DCW to Hydronic Supply_15-50 mm_:591225
+    400004: M_Backflow Preventer_ DCW to Hydronic Supply_15-50 mm_:591225 1
+    400006: M_Backflow Preventer_ DCW to Hydronic Supply_15-50 mm_:591225 2
+    400008: M_Backflow Preventer_ DCW to Hydronic Supply_15-50 mm_:593194
+    400010: M_Backflow Preventer_ DCW to Hydronic Supply_15-50 mm_:593194 1
+    400012: M_Backflow Preventer_ DCW to Hydronic Supply_15-50 mm_:593194 2
+    400014: M_Backflow Preventer_ DCW to Hydronic Supply_15-50 mm_:593973
+    400016: M_Backflow Preventer_ DCW to Hydronic Supply_15-50 mm_:593973 1
+    400018: M_Backflow Preventer_ DCW to Hydronic Supply_15-50 mm_:593973 2
+    400020: M_Backflow Preventer_ DCW to Hydronic Supply_15-50 mm_:594130
+    400022: M_Backflow Preventer_ DCW to Hydronic Supply_15-50 mm_:594130 1
+    400024: M_Backflow Preventer_ DCW to Hydronic Supply_15-50 mm_:594130 2
+    400026: M_Ball Valve - 50-150 mm:578433
+    400028: M_Ball Valve - 50-150 mm:578433 1
+    400030: M_Ball Valve - 50-150 mm:578433 2
+    400032: M_Ball Valve - 50-150 mm:578607
+    400034: M_Ball Valve - 50-150 mm:578607 1
+    400036: M_Ball Valve - 50-150 mm:578607 2
+    400038: M_Ball Valve - 50-150 mm:579237
+    400040: M_Ball Valve - 50-150 mm:579237 1
+    400042: M_Ball Valve - 50-150 mm:579237 2
+    400044: M_Ball Valve - 50-150 mm:579260
+    400046: M_Ball Valve - 50-150 mm:579260 1
+    400048: M_Ball Valve - 50-150 mm:579260 2
+    400050: M_Smoke Detector:610280
+    400052: M_Smoke Detector:610280 1
+    400054: M_Smoke Detector:610280 2
+    400056: M_Smoke Detector:610319
+    400058: M_Smoke Detector:610319 1
+    400060: M_Smoke Detector:610319 2
+    400062: M_Smoke Detector:610426
+    400064: M_Smoke Detector:610426 1
+    400066: M_Smoke Detector:610426 2
+    400068: M_Smoke Detector:610469
+    400070: M_Smoke Detector:610469 1
+    400072: M_Smoke Detector:610469 2
+    400074: M_Smoke Detector:610482
+    400076: M_Smoke Detector:610482 1
+    400078: M_Smoke Detector:610482 2
+    400080: M_Smoke Detector:610550
+    400082: M_Smoke Detector:610550 1
+    400084: M_Smoke Detector:610550 2
+    2300000: M_Backflow Preventer_ DCW to Hydronic Supply_15-50 mm_:591225 2
+    2300002: M_Backflow Preventer_ DCW to Hydronic Supply_15-50 mm_:593194 2
+    2300004: M_Backflow Preventer_ DCW to Hydronic Supply_15-50 mm_:593973 2
+    2300006: M_Backflow Preventer_ DCW to Hydronic Supply_15-50 mm_:594130 2
+    2300008: M_Ball Valve - 50-150 mm:578433 2
+    2300010: M_Ball Valve - 50-150 mm:578607 2
+    2300012: M_Ball Valve - 50-150 mm:579237 2
+    2300014: M_Ball Valve - 50-150 mm:579260 2
+    2300016: M_Smoke Detector:610280 2
+    2300018: M_Smoke Detector:610319 2
+    2300020: M_Smoke Detector:610426 2
+    2300022: M_Smoke Detector:610469 2
+    2300024: M_Smoke Detector:610482 2
+    2300026: M_Smoke Detector:610550 2
+    3300000: M_Backflow Preventer_ DCW to Hydronic Supply_15-50 mm_:591225 2
+    3300002: M_Backflow Preventer_ DCW to Hydronic Supply_15-50 mm_:593194 2
+    3300004: M_Backflow Preventer_ DCW to Hydronic Supply_15-50 mm_:593973 2
+    3300006: M_Backflow Preventer_ DCW to Hydronic Supply_15-50 mm_:594130 2
+    3300008: M_Ball Valve - 50-150 mm:578433 2
+    3300010: M_Ball Valve - 50-150 mm:578607 2
+    3300012: M_Ball Valve - 50-150 mm:579237 2
+    3300014: M_Ball Valve - 50-150 mm:579260 2
+    3300016: M_Smoke Detector:610280 2
+    3300018: M_Smoke Detector:610319 2
+    3300020: M_Smoke Detector:610426 2
+    3300022: M_Smoke Detector:610469 2
+    3300024: M_Smoke Detector:610482 2
+    3300026: M_Smoke Detector:610550 2
+    4300000: M_Smoke Detector:610280
+    4300002: M_Smoke Detector:610550
+    4300004: M_Ball Valve - 50-150 mm:578433
+    4300006: M_Ball Valve - 50-150 mm:579237
+    4300008: M_Smoke Detector:610319
+    4300010: M_Smoke Detector:610482
+    4300012: M_Smoke Detector:610469
+    4300014: M_Smoke Detector:610426
+    4300016: M_Ball Valve - 50-150 mm:578607
+    4300018: M_Backflow Preventer_ DCW to Hydronic Supply_15-50 mm_:593973
+    4300020: M_Backflow Preventer_ DCW to Hydronic Supply_15-50 mm_:594130
+    4300022: M_Ball Valve - 50-150 mm:579260
+    4300024: M_Backflow Preventer_ DCW to Hydronic Supply_15-50 mm_:591225
+    4300026: M_Backflow Preventer_ DCW to Hydronic Supply_15-50 mm_:593194
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,0 +1,398 @@
+fileFormatVersion: 2
+guid: 213ef74ad73181541a628c0191781bb8
+timeCreated: 1507323893
+licenseType: Free
+ModelImporter:
+  serializedVersion: 21
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: Stair:151086
+    100004: Stair:151086 1
+    100006: Stair:151086 10
+    100008: Stair:151086 11
+    100010: Stair:151086 12
+    100012: Stair:151086 13
+    100014: Stair:151086 14
+    100016: Stair:151086 15
+    100018: Stair:151086 16
+    100020: Stair:151086 17
+    100022: Stair:151086 18
+    100024: Stair:151086 19
+    100026: Stair:151086 2
+    100028: Stair:151086 20
+    100030: Stair:151086 21
+    100032: Stair:151086 22
+    100034: Stair:151086 23
+    100036: Stair:151086 24
+    100038: Stair:151086 25
+    100040: Stair:151086 26
+    100042: Stair:151086 27
+    100044: Stair:151086 28
+    100046: Stair:151086 29
+    100048: Stair:151086 3
+    100050: Stair:151086 30
+    100052: Stair:151086 31
+    100054: Stair:151086 4
+    100056: Stair:151086 5
+    100058: Stair:151086 6
+    100060: Stair:151086 7
+    100062: Stair:151086 8
+    100064: Stair:151086 9
+    100066: Stair:198878
+    100068: Stair:198878 1
+    100070: Stair:198878 10
+    100072: Stair:198878 11
+    100074: Stair:198878 12
+    100076: Stair:198878 13
+    100078: Stair:198878 14
+    100080: Stair:198878 15
+    100082: Stair:198878 16
+    100084: Stair:198878 17
+    100086: Stair:198878 18
+    100088: Stair:198878 19
+    100090: Stair:198878 2
+    100092: Stair:198878 20
+    100094: Stair:198878 21
+    100096: Stair:198878 22
+    100098: Stair:198878 23
+    100100: Stair:198878 24
+    100102: Stair:198878 25
+    100104: Stair:198878 26
+    100106: Stair:198878 27
+    100108: Stair:198878 28
+    100110: Stair:198878 29
+    100112: Stair:198878 3
+    100114: Stair:198878 30
+    100116: Stair:198878 31
+    100118: Stair:198878 4
+    100120: Stair:198878 5
+    100122: Stair:198878 6
+    100124: Stair:198878 7
+    100126: Stair:198878 8
+    100128: Stair:198878 9
+    400000: //RootNode
+    400002: Stair:151086
+    400004: Stair:151086 1
+    400006: Stair:151086 10
+    400008: Stair:151086 11
+    400010: Stair:151086 12
+    400012: Stair:151086 13
+    400014: Stair:151086 14
+    400016: Stair:151086 15
+    400018: Stair:151086 16
+    400020: Stair:151086 17
+    400022: Stair:151086 18
+    400024: Stair:151086 19
+    400026: Stair:151086 2
+    400028: Stair:151086 20
+    400030: Stair:151086 21
+    400032: Stair:151086 22
+    400034: Stair:151086 23
+    400036: Stair:151086 24
+    400038: Stair:151086 25
+    400040: Stair:151086 26
+    400042: Stair:151086 27
+    400044: Stair:151086 28
+    400046: Stair:151086 29
+    400048: Stair:151086 3
+    400050: Stair:151086 30
+    400052: Stair:151086 31
+    400054: Stair:151086 4
+    400056: Stair:151086 5
+    400058: Stair:151086 6
+    400060: Stair:151086 7
+    400062: Stair:151086 8
+    400064: Stair:151086 9
+    400066: Stair:198878
+    400068: Stair:198878 1
+    400070: Stair:198878 10
+    400072: Stair:198878 11
+    400074: Stair:198878 12
+    400076: Stair:198878 13
+    400078: Stair:198878 14
+    400080: Stair:198878 15
+    400082: Stair:198878 16
+    400084: Stair:198878 17
+    400086: Stair:198878 18
+    400088: Stair:198878 19
+    400090: Stair:198878 2
+    400092: Stair:198878 20
+    400094: Stair:198878 21
+    400096: Stair:198878 22
+    400098: Stair:198878 23
+    400100: Stair:198878 24
+    400102: Stair:198878 25
+    400104: Stair:198878 26
+    400106: Stair:198878 27
+    400108: Stair:198878 28
+    400110: Stair:198878 29
+    400112: Stair:198878 3
+    400114: Stair:198878 30
+    400116: Stair:198878 31
+    400118: Stair:198878 4
+    400120: Stair:198878 5
+    400122: Stair:198878 6
+    400124: Stair:198878 7
+    400126: Stair:198878 8
+    400128: Stair:198878 9
+    2300000: Stair:151086 1
+    2300002: Stair:151086 10
+    2300004: Stair:151086 11
+    2300006: Stair:151086 12
+    2300008: Stair:151086 13
+    2300010: Stair:151086 14
+    2300012: Stair:151086 15
+    2300014: Stair:151086 16
+    2300016: Stair:151086 17
+    2300018: Stair:151086 18
+    2300020: Stair:151086 19
+    2300022: Stair:151086 2
+    2300024: Stair:151086 20
+    2300026: Stair:151086 21
+    2300028: Stair:151086 22
+    2300030: Stair:151086 23
+    2300032: Stair:151086 24
+    2300034: Stair:151086 25
+    2300036: Stair:151086 26
+    2300038: Stair:151086 27
+    2300040: Stair:151086 28
+    2300042: Stair:151086 29
+    2300044: Stair:151086 3
+    2300046: Stair:151086 30
+    2300048: Stair:151086 31
+    2300050: Stair:151086 4
+    2300052: Stair:151086 5
+    2300054: Stair:151086 6
+    2300056: Stair:151086 7
+    2300058: Stair:151086 8
+    2300060: Stair:151086 9
+    2300062: Stair:198878 1
+    2300064: Stair:198878 10
+    2300066: Stair:198878 11
+    2300068: Stair:198878 12
+    2300070: Stair:198878 13
+    2300072: Stair:198878 14
+    2300074: Stair:198878 15
+    2300076: Stair:198878 16
+    2300078: Stair:198878 17
+    2300080: Stair:198878 18
+    2300082: Stair:198878 19
+    2300084: Stair:198878 2
+    2300086: Stair:198878 20
+    2300088: Stair:198878 21
+    2300090: Stair:198878 22
+    2300092: Stair:198878 23
+    2300094: Stair:198878 24
+    2300096: Stair:198878 25
+    2300098: Stair:198878 26
+    2300100: Stair:198878 27
+    2300102: Stair:198878 28
+    2300104: Stair:198878 29
+    2300106: Stair:198878 3
+    2300108: Stair:198878 30
+    2300110: Stair:198878 31
+    2300112: Stair:198878 4
+    2300114: Stair:198878 5
+    2300116: Stair:198878 6
+    2300118: Stair:198878 7
+    2300120: Stair:198878 8
+    2300122: Stair:198878 9
+    3300000: Stair:151086 1
+    3300002: Stair:151086 10
+    3300004: Stair:151086 11
+    3300006: Stair:151086 12
+    3300008: Stair:151086 13
+    3300010: Stair:151086 14
+    3300012: Stair:151086 15
+    3300014: Stair:151086 16
+    3300016: Stair:151086 17
+    3300018: Stair:151086 18
+    3300020: Stair:151086 19
+    3300022: Stair:151086 2
+    3300024: Stair:151086 20
+    3300026: Stair:151086 21
+    3300028: Stair:151086 22
+    3300030: Stair:151086 23
+    3300032: Stair:151086 24
+    3300034: Stair:151086 25
+    3300036: Stair:151086 26
+    3300038: Stair:151086 27
+    3300040: Stair:151086 28
+    3300042: Stair:151086 29
+    3300044: Stair:151086 3
+    3300046: Stair:151086 30
+    3300048: Stair:151086 31
+    3300050: Stair:151086 4
+    3300052: Stair:151086 5
+    3300054: Stair:151086 6
+    3300056: Stair:151086 7
+    3300058: Stair:151086 8
+    3300060: Stair:151086 9
+    3300062: Stair:198878 1
+    3300064: Stair:198878 10
+    3300066: Stair:198878 11
+    3300068: Stair:198878 12
+    3300070: Stair:198878 13
+    3300072: Stair:198878 14
+    3300074: Stair:198878 15
+    3300076: Stair:198878 16
+    3300078: Stair:198878 17
+    3300080: Stair:198878 18
+    3300082: Stair:198878 19
+    3300084: Stair:198878 2
+    3300086: Stair:198878 20
+    3300088: Stair:198878 21
+    3300090: Stair:198878 22
+    3300092: Stair:198878 23
+    3300094: Stair:198878 24
+    3300096: Stair:198878 25
+    3300098: Stair:198878 26
+    3300100: Stair:198878 27
+    3300102: Stair:198878 28
+    3300104: Stair:198878 29
+    3300106: Stair:198878 3
+    3300108: Stair:198878 30
+    3300110: Stair:198878 31
+    3300112: Stair:198878 4
+    3300114: Stair:198878 5
+    3300116: Stair:198878 6
+    3300118: Stair:198878 7
+    3300120: Stair:198878 8
+    3300122: Stair:198878 9
+    4300000: Stair:151086
+    4300002: Stair:151086
+    4300004: Stair:151086
+    4300006: Stair:151086
+    4300008: Stair:151086
+    4300010: Stair:151086
+    4300012: Stair:151086
+    4300014: Stair:151086
+    4300016: Stair:151086
+    4300018: Stair:151086
+    4300020: Stair:151086
+    4300022: Stair:151086
+    4300024: Stair:151086
+    4300026: Stair:151086
+    4300028: Stair:151086
+    4300030: Stair:151086
+    4300032: Stair:151086
+    4300034: Stair:151086
+    4300036: Stair:151086
+    4300038: Stair:151086
+    4300040: Stair:151086
+    4300042: Stair:151086
+    4300044: Stair:151086
+    4300046: Stair:151086
+    4300048: Stair:151086
+    4300050: Stair:151086
+    4300052: Stair:151086
+    4300054: Stair:151086
+    4300056: Stair:151086
+    4300058: Stair:151086
+    4300060: Stair:151086
+    4300062: Stair:198878
+    4300064: Stair:198878
+    4300066: Stair:198878
+    4300068: Stair:198878
+    4300070: Stair:198878
+    4300072: Stair:198878
+    4300074: Stair:198878
+    4300076: Stair:198878
+    4300078: Stair:198878
+    4300080: Stair:198878
+    4300082: Stair:198878
+    4300084: Stair:198878
+    4300086: Stair:198878
+    4300088: Stair:198878
+    4300090: Stair:198878
+    4300092: Stair:198878
+    4300094: Stair:198878
+    4300096: Stair:198878
+    4300098: Stair:198878
+    4300100: Stair:198878
+    4300102: Stair:198878
+    4300104: Stair:198878
+    4300106: Stair:198878
+    4300108: Stair:198878
+    4300110: Stair:198878
+    4300112: Stair:198878
+    4300114: Stair:198878
+    4300116: Stair:198878
+    4300118: Stair:198878
+    4300120: Stair:198878
+    4300122: Stair:198878
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

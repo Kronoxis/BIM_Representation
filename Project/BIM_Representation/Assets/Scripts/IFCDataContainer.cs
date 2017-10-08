@@ -62,6 +62,7 @@ public class IFCDataContainer
 
     public IFCEntity GetEntity(uint id)
     {
+        if (id == 0) return null;
         return _entitiesById[id].ToList()[0];
     }
 
@@ -87,26 +88,41 @@ public class IFCDataContainer
         return toRet;
     }
 
+    public List<IFCEntity> GetEntities(List<uint> ids)
+    {
+        List<IFCEntity> toRet = new List<IFCEntity>();
+        foreach (var id in ids)
+        {
+            if (id == 0) continue;
+            toRet.Add(GetEntity(id));
+        }
+        return toRet;
+    }
+
     public List<T> GetEntities<T>(bool includeSubEntities) where T : IFCEntity
     {
         List<T> toRet = new List<T>();
-        foreach (var entity in _entitiesByType[typeof(T)].ToList())
-            toRet.Add((T) entity);
+        foreach (var e in _entitiesByType[typeof(T)].ToList())
+            toRet.Add((T)e);
 
         if (includeSubEntities)
         {
-            var subEntityTypes = typeof(T).Assembly.GetTypes()
-                .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(T)));
-
-            foreach (var subEntityType in subEntityTypes)
-            {
-                foreach (var subEntity in _entitiesByType[subEntityType].ToList())
-                {
-                    toRet.Add((T) subEntity);
-                }
-            }
+            foreach (var type in GetSubEntitytypes(typeof(T)))
+                foreach (var e in _entitiesByType[type])
+                    toRet.Add((T)e);
         }
 
+        return toRet;
+    }
+
+    private List<Type> GetSubEntitytypes(Type type)
+    {
+        List<Type> toRet = new List<Type>();
+        toRet.AddRange(type.Assembly.GetTypes()
+            .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(type)));
+        var subEntities = toRet.ToArray();
+        foreach (var subEntity in subEntities)
+            toRet.AddRange(GetSubEntitytypes(subEntity));
         return toRet;
     }
 

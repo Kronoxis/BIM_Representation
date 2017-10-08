@@ -268,6 +268,24 @@ public class IFCEntity
     {
         return IFCDataManager.GetDataContainer(File).GetEntity(GetProperty(key).AsId());
     }
+
+    public T GetReference<T>(string key) where T : IFCEntity
+    {
+        return IFCDataManager.GetDataContainer(File).GetEntity<T>(GetProperty(key).AsId());
+    }
+
+    public bool Is<T>(bool includeChildren)
+    {
+        foreach (var type in _entityTypes)
+        {
+            if (type == typeof(T) || type.IsSubclassOf(typeof(T)))
+            {
+                if (GetType() == type)
+                    return true;
+            }
+        }
+        return false;
+    }
 }
 #endregion
 
@@ -626,6 +644,85 @@ public abstract class IIFCContext : IIFCObjectDefinition
     }
 }
 
+#region IIFCRepresentationContext 
+/// <summary>
+/// 
+/// Properties:
+/// <see cref="string"/> ContextIdentifier |
+/// <see cref="string"/> ContextType
+/// 
+/// <para/>Parent:
+/// <see cref="IFCEntity"/>
+/// 
+/// <para/>Children:
+/// <see cref="IFCGeometricRepresentationContext"/>
+/// 
+/// </summary>
+public abstract class IIFCRepresentationContext : IFCEntity
+{
+    protected IIFCRepresentationContext(IFCEntity e) : base(e)
+    {
+        AddKey("ContextIdentifier");
+        AddKey("ContextType");
+    }
+}
+
+#region IFCGeometricRepresentationContext 
+/// <summary>
+/// 
+/// Properties:
+/// <see cref="int"/> CoordinateSpaceDimension |
+/// <see cref="float"/> Precision |
+/// <see cref="IIFCAxis2Placement"/> WorldCoordinateSystem |
+/// <see cref="IFCDirection"/> TrueNorth
+/// 
+/// <para/>Parent:
+/// <see cref="IIFCRepresentationContext"/>
+/// 
+/// <para/>Children:
+/// <see cref="IFCGeometricRepresentationSubContext"/>
+/// 
+/// </summary>
+public class IFCGeometricRepresentationContext : IIFCRepresentationContext
+{
+    public IFCGeometricRepresentationContext(IFCEntity e) : base(e)
+    {
+        AddKey("CoordinateSpaceDimension");
+        AddKey("Precision");
+        AddKey("WorldCoordinateSystem");
+        AddKey("TrueNorth");
+    }
+}
+
+#region IFCGeometricRepresentationSubContext
+/// <summary>
+/// 
+/// Properties:
+/// <see cref="IFCGeometricRepresentationContext"/> ParentContext |
+/// <see cref="float"/> TargetScale |
+/// <see cref="IFCGeometricProjectionEnum"/> TargetView |
+/// <see cref="string"/> UserDefinedTargetView
+/// 
+/// <para/>Parent:
+/// <see cref="IFCGeometricRepresentationContext"/>
+/// 
+/// </summary>
+public class IFCGeometricRepresentationSubContext : IFCGeometricRepresentationContext
+{
+    public IFCGeometricRepresentationSubContext(IFCEntity e) : base(e)
+    {
+        AddKey("ParentContext");
+        AddKey("TargetScale");
+        AddKey("TargetView");
+        AddKey("UserDefinedTargetView");
+    }
+}
+#endregion
+
+#endregion
+
+#endregion
+
 #region IFCProject
 /// <summary>
 /// 
@@ -740,8 +837,8 @@ public class IFCOccupant : IFCActor
 /// <summary>
 /// 
 /// Properties:
-/// <see cref="IFCObjectPlacement"/> ObjectPlacement |
-/// <see cref="IFCProductRepresentation"/> Representation
+/// <see cref="IIFCObjectPlacement"/> ObjectPlacement |
+/// <see cref="IIFCProductRepresentation"/> Representation
 /// 
 /// <para/>Parent:
 /// <see cref="IIFCObject"/>
@@ -848,6 +945,21 @@ public abstract class IIFCBuildingElement : IIFCElement
     }
 }
 
+#region IFCBeam
+/// <summary>
+/// 
+/// <para/>Parent:
+/// <see cref="IIFCBuildingElement"/>
+/// 
+/// </summary>
+public class IFCBeam : IIFCBuildingElement
+{
+    public IFCBeam(IFCEntity e) : base(e)
+    {
+    }
+}
+#endregion
+
 #region IFCBuildingElementProxy
 /// <summary>
 /// 
@@ -863,6 +975,291 @@ public class IFCBuildingElementProxy : IIFCBuildingElement
     public IFCBuildingElementProxy(IFCEntity e) : base(e)
     {
         AddKey("PredefinedType");
+    }
+}
+#endregion
+
+#region IFCChimney
+/// <summary>
+/// 
+/// <para/>Parent:
+/// <see cref="IIFCBuildingElement"/>
+/// 
+/// </summary>
+public class IFCChimney : IIFCBuildingElement
+{
+    public IFCChimney(IFCEntity e) : base(e)
+    {
+    }
+}
+#endregion
+
+#region IFCColumn
+/// <summary>
+/// 
+/// <para/>Parent:
+/// <see cref="IIFCBuildingElement"/>
+/// 
+/// </summary>
+public class IFCColumn : IIFCBuildingElement
+{
+    public IFCColumn(IFCEntity e) : base(e)
+    {
+    }
+}
+#endregion
+
+#region IFCCovering
+/// <summary>
+/// 
+/// <para/>Parent:
+/// <see cref="IIFCBuildingElement"/>
+/// 
+/// </summary>
+public class IFCCovering : IIFCBuildingElement
+{
+    public IFCCovering(IFCEntity e) : base(e)
+    {
+    }
+}
+#endregion
+
+#region IFCCurtainWall
+/// <summary>
+/// 
+/// <para/>Parent:
+/// <see cref="IIFCBuildingElement"/>
+/// 
+/// </summary>
+public class IFCCurtainWall : IIFCBuildingElement
+{
+    public IFCCurtainWall(IFCEntity e) : base(e)
+    {
+    }
+}
+#endregion
+
+#region IFCDoor
+/// <summary>
+/// 
+/// <para/>Parent:
+/// <see cref="IIFCBuildingElement"/>
+/// 
+/// </summary>
+public class IFCDoor : IIFCBuildingElement
+{
+    public IFCDoor(IFCEntity e) : base(e)
+    {
+    }
+}
+#endregion
+
+#region IFCFooting
+/// <summary>
+/// 
+/// <para/>Parent:
+/// <see cref="IIFCBuildingElement"/>
+/// 
+/// </summary>
+public class IFCFooting : IIFCBuildingElement
+{
+    public IFCFooting(IFCEntity e) : base(e)
+    {
+    }
+}
+#endregion
+
+#region IFCMember
+/// <summary>
+/// 
+/// <para/>Parent:
+/// <see cref="IIFCBuildingElement"/>
+/// 
+/// </summary>
+public class IFCMember : IIFCBuildingElement
+{
+    public IFCMember(IFCEntity e) : base(e)
+    {
+    }
+}
+#endregion
+
+#region IFCPile
+/// <summary>
+/// 
+/// <para/>Parent:
+/// <see cref="IIFCBuildingElement"/>
+/// 
+/// </summary>
+public class IFCPile : IIFCBuildingElement
+{
+    public IFCPile(IFCEntity e) : base(e)
+    {
+    }
+}
+#endregion
+
+#region IFCPlate
+/// <summary>
+/// 
+/// <para/>Parent:
+/// <see cref="IIFCBuildingElement"/>
+/// 
+/// </summary>
+public class IFCPlate : IIFCBuildingElement
+{
+    public IFCPlate(IFCEntity e) : base(e)
+    {
+    }
+}
+#endregion
+
+#region IFCRailing
+/// <summary>
+/// 
+/// <para/>Parent:
+/// <see cref="IIFCBuildingElement"/>
+/// 
+/// </summary>
+public class IFCRailing : IIFCBuildingElement
+{
+    public IFCRailing(IFCEntity e) : base(e)
+    {
+    }
+}
+#endregion
+
+#region IFCRamp
+/// <summary>
+/// 
+/// <para/>Parent:
+/// <see cref="IIFCBuildingElement"/>
+/// 
+/// </summary>
+public class IFCRamp : IIFCBuildingElement
+{
+    public IFCRamp(IFCEntity e) : base(e)
+    {
+    }
+}
+#endregion
+
+#region IFCRampFlight
+/// <summary>
+/// 
+/// <para/>Parent:
+/// <see cref="IIFCBuildingElement"/>
+/// 
+/// </summary>
+public class IFCRampFlight : IIFCBuildingElement
+{
+    public IFCRampFlight(IFCEntity e) : base(e)
+    {
+    }
+}
+#endregion
+
+#region IFCRoof
+/// <summary>
+/// 
+/// <para/>Parent:
+/// <see cref="IIFCBuildingElement"/>
+/// 
+/// </summary>
+public class IFCRoof : IIFCBuildingElement
+{
+    public IFCRoof(IFCEntity e) : base(e)
+    {
+    }
+}
+#endregion
+
+#region IFCShadingDevice
+/// <summary>
+/// 
+/// <para/>Parent:
+/// <see cref="IIFCBuildingElement"/>
+/// 
+/// </summary>
+public class IFCShadingDevice : IIFCBuildingElement
+{
+    public IFCShadingDevice(IFCEntity e) : base(e)
+    {
+    }
+}
+#endregion
+
+#region IFCSlab
+/// <summary>
+/// 
+/// <para/>Parent:
+/// <see cref="IIFCBuildingElement"/>
+/// 
+/// </summary>
+public class IFCSlab : IIFCBuildingElement
+{
+    public IFCSlab(IFCEntity e) : base(e)
+    {
+    }
+}
+#endregion
+
+#region IFCStair
+/// <summary>
+/// 
+/// <para/>Parent:
+/// <see cref="IIFCBuildingElement"/>
+/// 
+/// </summary>
+public class IFCStair : IIFCBuildingElement
+{
+    public IFCStair(IFCEntity e) : base(e)
+    {
+    }
+}
+#endregion
+
+#region IFCStairFlight
+/// <summary>
+/// 
+/// <para/>Parent:
+/// <see cref="IIFCBuildingElement"/>
+/// 
+/// </summary>
+public class IFCStairFlight : IIFCBuildingElement
+{
+    public IFCStairFlight(IFCEntity e) : base(e)
+    {
+    }
+}
+#endregion
+
+#region IFCWall
+/// <summary>
+/// 
+/// <para/>Parent:
+/// <see cref="IIFCBuildingElement"/>
+/// 
+/// </summary>
+public class IFCWall : IIFCBuildingElement
+{
+    public IFCWall(IFCEntity e) : base(e)
+    {
+    }
+}
+#endregion
+
+#region IFCWindow
+/// <summary>
+/// 
+/// <para/>Parent:
+/// <see cref="IIFCBuildingElement"/>
+/// 
+/// </summary>
+public class IFCWindow : IIFCBuildingElement
+{
+    public IFCWindow(IFCEntity e) : base(e)
+    {
     }
 }
 #endregion
@@ -1138,6 +1535,67 @@ public class IFCStyledRepresentation : IIFCStyleModel
 }
 #endregion
 
+#endregion
+
+#endregion
+
+#region IIFCProductRepresentation
+/// <summary>
+/// 
+/// Properties:
+/// <see cref="string"/> Name | 
+/// <see cref="string"/> Description |
+/// <see cref="IIFCRepresentation"/> Representations
+/// 
+/// <para/>Parent:
+/// <see cref="IFCEntity"/>
+/// 
+/// <para/>Children:
+/// <see cref="IFCMaterialDefinitionRepresentation"/>
+/// <see cref="IFCProductDefinitionShape"/>
+/// 
+/// </summary>
+public abstract class IIFCProductRepresentation : IFCEntity
+{
+    public IIFCProductRepresentation(IFCEntity e) : base(e)
+    {
+        AddKey("Name");
+        AddKey("Description");
+        AddKey("Representations");
+    }
+}
+
+#region IFCMaterialDefinitionRepresentation
+/// <summary>
+/// 
+/// Properties:
+/// <see cref="IFCMaterial"/> RepresentedMaterial
+/// 
+/// <para/>Parent: 
+/// <see cref="IIFCProductRepresentation"/>
+/// 
+/// </summary>
+public class IFCMaterialDefinitionRepresentation : IIFCProductRepresentation
+{
+    public IFCMaterialDefinitionRepresentation(IFCEntity e) : base(e)
+    {
+        AddKey("RepresentedMaterial");
+    }
+}
+#endregion
+
+#region IFCProductDefinitionShape
+/// <summary>
+/// 
+/// <para/>Parent:
+/// <see cref="IIFCProductRepresentation"/>
+/// </summary>
+public class IFCProductDefinitionShape : IIFCProductRepresentation
+{
+    public IFCProductDefinitionShape(IFCEntity e) : base(e)
+    {
+    }
+}
 #endregion
 
 #endregion
@@ -3455,15 +3913,43 @@ public class IFCVector : IIFCGeometricRepresentationItem
 
 #region IFCMappedItem
 /// <summary>
-/// TODO
+/// 
+/// Properties:
+/// <see cref="IFCRepresentationMap"/> MappingSource |
+/// <see cref="IIFCCartesianTransformationOperator"/> MappingTarget
+/// 
 /// <para/>Parent:
 /// <see cref="IIFCRepresentationItem"/>
+/// 
 /// </summary>
 public class IFCMappedItem : IIFCRepresentationItem
 {
     public IFCMappedItem(IFCEntity e) : base(e)
     {
+        AddKey("MappingSource");
+        AddKey("MappingTarget");
     }
+}
+#endregion
+
+#region IFCRepresentationMap
+/// <summary>
+/// 
+/// Properties:
+/// <see cref="IIFCAxis2Placement"/> MappingOrigin |
+/// <see cref="IIFCRepresentation"/> MappedRepresentation 
+/// 
+/// <para/>Parent:
+/// <see cref="IFCEntity"/>
+/// 
+/// </summary>
+public class IFCRepresentationMap : IFCEntity
+{
+    public IFCRepresentationMap(IFCEntity e) : base(e)
+    {
+        AddKey("MappingOrigin");
+        AddKey("MappedRepresentation");
+    } 
 }
 #endregion
 
@@ -3542,8 +4028,8 @@ public interface IIFCShell
 #region IFCClosedShell
 /// <summary>
 /// 
-/// <para/>Parent
-/// <see cref="IFCConnectedFaceSet"/>
+/// <para/>Parent:
+/// <see cref="IIFCConnectedFaceSet"/>
 /// 
 /// </summary>
 public class IFCClosedShell : IIFCConnectedFaceSet, IIFCShell

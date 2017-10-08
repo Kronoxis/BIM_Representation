@@ -10,6 +10,7 @@ public class Metadata : MonoBehaviour
 
     public void SetMetadata(IFCEntity e)
     {
+        if (e == null) return;
         Id = e.Id;
         Keys = e.Keys;
         Properties = e.Properties;

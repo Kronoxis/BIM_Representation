@@ -1,0 +1,231 @@
+fileFormatVersion: 2
+guid: c589f43413fd78445904854c913bf030
+timeCreated: 1507323901
+licenseType: Free
+ModelImporter:
+  serializedVersion: 21
+  fileIDToRecycleName:
+    100000: Basic Roof:184483
+    100002: Basic Roof:184483 1
+    100004: Floor:141232
+    100006: Floor:141232 1
+    100008: Floor:143106
+    100010: Floor:143106 1
+    100012: Floor:144800
+    100014: Floor:144800 1
+    100016: Floor:144872
+    100018: Floor:144872 1
+    100020: Floor:169093
+    100022: Floor:169093 1
+    100024: Floor:169188
+    100026: Floor:169188 1
+    100028: Floor:169308
+    100030: Floor:169308 1
+    100032: Floor:169354
+    100034: Floor:169354 1
+    100036: Floor:169395
+    100038: Floor:169395 1
+    100040: Floor:169701
+    100042: Floor:169701 1
+    100044: Floor:169772
+    100046: Floor:169772 1
+    100048: Floor:169866
+    100050: Floor:169866 1
+    100052: Floor:170352
+    100054: Floor:170352 1
+    100056: Floor:170785
+    100058: Floor:170785 1
+    100060: Floor:171230
+    100062: Floor:171230 1
+    100064: Floor:171261
+    100066: Floor:171261 1
+    100068: Floor:171292
+    100070: Floor:171292 1
+    100072: Floor:171444
+    100074: Floor:171444 1
+    100076: Floor:216507
+    100078: Floor:216507 1
+    100080: Floor:216552
+    100082: Floor:216552 1
+    100084: //RootNode
+    400000: Basic Roof:184483
+    400002: Basic Roof:184483 1
+    400004: Floor:141232
+    400006: Floor:141232 1
+    400008: Floor:143106
+    400010: Floor:143106 1
+    400012: Floor:144800
+    400014: Floor:144800 1
+    400016: Floor:144872
+    400018: Floor:144872 1
+    400020: Floor:169093
+    400022: Floor:169093 1
+    400024: Floor:169188
+    400026: Floor:169188 1
+    400028: Floor:169308
+    400030: Floor:169308 1
+    400032: Floor:169354
+    400034: Floor:169354 1
+    400036: Floor:169395
+    400038: Floor:169395 1
+    400040: Floor:169701
+    400042: Floor:169701 1
+    400044: Floor:169772
+    400046: Floor:169772 1
+    400048: Floor:169866
+    400050: Floor:169866 1
+    400052: Floor:170352
+    400054: Floor:170352 1
+    400056: Floor:170785
+    400058: Floor:170785 1
+    400060: Floor:171230
+    400062: Floor:171230 1
+    400064: Floor:171261
+    400066: Floor:171261 1
+    400068: Floor:171292
+    400070: Floor:171292 1
+    400072: Floor:171444
+    400074: Floor:171444 1
+    400076: Floor:216507
+    400078: Floor:216507 1
+    400080: Floor:216552
+    400082: Floor:216552 1
+    400084: //RootNode
+    2300000: Basic Roof:184483 1
+    2300002: Floor:141232 1
+    2300004: Floor:143106 1
+    2300006: Floor:144800 1
+    2300008: Floor:144872 1
+    2300010: Floor:169093 1
+    2300012: Floor:169188 1
+    2300014: Floor:169308 1
+    2300016: Floor:169354 1
+    2300018: Floor:169395 1
+    2300020: Floor:169701 1
+    2300022: Floor:169772 1
+    2300024: Floor:169866 1
+    2300026: Floor:170352 1
+    2300028: Floor:170785 1
+    2300030: Floor:171230 1
+    2300032: Floor:171261 1
+    2300034: Floor:171292 1
+    2300036: Floor:171444 1
+    2300038: Floor:216507 1
+    2300040: Floor:216552 1
+    3300000: Basic Roof:184483 1
+    3300002: Floor:141232 1
+    3300004: Floor:143106 1
+    3300006: Floor:144800 1
+    3300008: Floor:144872 1
+    3300010: Floor:169093 1
+    3300012: Floor:169188 1
+    3300014: Floor:169308 1
+    3300016: Floor:169354 1
+    3300018: Floor:169395 1
+    3300020: Floor:169701 1
+    3300022: Floor:169772 1
+    3300024: Floor:169866 1
+    3300026: Floor:170352 1
+    3300028: Floor:170785 1
+    3300030: Floor:171230 1
+    3300032: Floor:171261 1
+    3300034: Floor:171292 1
+    3300036: Floor:171444 1
+    3300038: Floor:216507 1
+    3300040: Floor:216552 1
+    4300000: Floor:141232
+    4300002: Floor:143106
+    4300004: Floor:170352
+    4300006: Floor:170785
+    4300008: Floor:171230
+    4300010: Floor:171261
+    4300012: Floor:171292
+    4300014: Floor:171444
+    4300016: Floor:216507
+    4300018: Floor:216552
+    4300020: Floor:144800
+    4300022: Floor:144872
+    4300024: Floor:169093
+    4300026: Floor:169188
+    4300028: Floor:169308
+    4300030: Floor:169354
+    4300032: Floor:169395
+    4300034: Floor:169701
+    4300036: Floor:169772
+    4300038: Floor:169866
+    4300040: Basic Roof:184483
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
