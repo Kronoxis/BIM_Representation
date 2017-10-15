@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-//[ExecuteInEditMode]
 public class MakeDoubleFaced : MonoBehaviour
 {
     public Transform Parent;
 
-    private void Update()
+    private void Start()
     {
         var meshFilters = GetComponentsInChildren<MeshFilter>();
         if (meshFilters.Length > 0)
