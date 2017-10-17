@@ -274,6 +274,16 @@ public class IFCEntity
         return IFCDataManager.GetDataContainer(File).GetEntity<T>(GetProperty(key).AsId());
     }
 
+    public List<IFCEntity> GetReferences(string key)
+    {
+        return IFCDataManager.GetDataContainer(File).GetEntities(GetProperty(key).AsList().AsIds());
+    }
+
+    public List<T> GetReferences<T>(string key) where T : IFCEntity
+    {
+        return IFCDataManager.GetDataContainer(File).GetEntities<T>(GetProperty(key).AsList().AsIds());
+    }
+
     public bool Is<T>(bool includeChildren)
     {
         foreach (var type in _entityTypes)
@@ -3974,7 +3984,7 @@ public class IFCStyledItem : IIFCRepresentationItem
 /// <see cref="IIFCRepresentationItem"/>
 /// 
 /// <para/>Children: 
-/// <see cref="IIFCConnectedFaceSet"/> |
+/// <see cref="IFCConnectedFaceSet"/> |
 /// <see cref="IFCEdge"/> |
 /// <see cref="IFCFace"/> |
 /// <see cref="IFCFaceBound"/> |
@@ -3990,7 +4000,7 @@ public abstract class IIFCTopologicalRepresentationItem : IIFCRepresentationItem
     }
 }
 
-#region IIFCConnectedFaceSet
+#region IFCConnectedFaceSet
 /// <summary>
 /// 
 /// Properties: 
@@ -4004,9 +4014,9 @@ public abstract class IIFCTopologicalRepresentationItem : IIFCRepresentationItem
 /// <see cref="IFCOpenShell "/>
 /// 
 /// </summary>
-public abstract class IIFCConnectedFaceSet : IIFCTopologicalRepresentationItem
+public class IFCConnectedFaceSet : IIFCTopologicalRepresentationItem
 {
-    protected IIFCConnectedFaceSet(IFCEntity e) : base(e)
+    public IFCConnectedFaceSet(IFCEntity e) : base(e)
     {
         AddKey("CfsFaces");
     }
@@ -4029,10 +4039,10 @@ public interface IIFCShell
 /// <summary>
 /// 
 /// <para/>Parent:
-/// <see cref="IIFCConnectedFaceSet"/>
+/// <see cref="IFCConnectedFaceSet"/>
 /// 
 /// </summary>
-public class IFCClosedShell : IIFCConnectedFaceSet, IIFCShell
+public class IFCClosedShell : IFCConnectedFaceSet, IIFCShell
 {
     public IFCClosedShell(IFCEntity e) : base(e)
     {
@@ -4047,7 +4057,7 @@ public class IFCClosedShell : IIFCConnectedFaceSet, IIFCShell
 /// <see cref="IFCConnectedFaceSet"/>
 /// 
 /// </summary>
-public class IFCOpenShell : IIFCConnectedFaceSet, IIFCShell
+public class IFCOpenShell : IFCConnectedFaceSet, IIFCShell
 {
     public IFCOpenShell(IFCEntity e) : base(e)
     {
