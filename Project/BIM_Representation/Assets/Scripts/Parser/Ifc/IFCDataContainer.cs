@@ -117,10 +117,18 @@ public class IFCDataContainer
 
     public List<T> GetEntities<T>(List<uint> ids) where T : IFCEntity
     {
-        var t = typeof(T);
-        var e = GetEntity(ids[0]);
-        var et = (T)e;
-        return ids.Select(id => GetEntity<T>(id)).ToList();
+        List<T> toRet = new List<T>();
+        foreach (var id in ids)
+        {
+            var e = GetEntity(id);
+            if (e.GetType() == typeof(IFCEntity))
+            {
+                Debug.LogWarning("Entity with id " + id + " does not have a specific type! No conversion possible.");
+                return toRet;
+            }
+            toRet.Add(GetEntity<T>(id));
+        }
+        return toRet;
     }
 
     private List<Type> GetSubEntitytypes(Type type)

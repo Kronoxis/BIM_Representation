@@ -321,7 +321,6 @@ public class IFCBuildingGenerator : MonoBehaviour
         normals = new List<Vector3>();
         uvs = new List<Vector2>();
 
-        var container = IFCDataManager.GetDataContainer(geometrySet.File);
         foreach (var face in geometrySet.GetReferences<IFCFace>("CfsFaces"))
         {
             foreach (var bound in face.GetReferences<IFCFaceBound>("Bounds"))
