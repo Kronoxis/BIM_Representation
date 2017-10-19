@@ -91,7 +91,7 @@ public class IFCBuildingGenerator : MonoBehaviour
                 {
                     var fileName = container.File.Name;
                     ProgressText.text +=
-                        "[" + fileName + "]: Parsed " + Helpers.BytesToString(container.GetParsedCharCount()) + "\n";
+                        "[" + fileName + "]: Parsed " + IfcHelpers.BytesToString(container.GetParsedCharCount()) + "\n";
                 }
                 parsedBytes += container.GetParsedCharCount();
             }
@@ -102,10 +102,10 @@ public class IFCBuildingGenerator : MonoBehaviour
             var fps = 1 / Time.deltaTime;
             // Set end text
             ProgressText.text += "\nElapsed Time: " + elapsedSecs.ToString("0") + " seconds.";
-            ProgressText.text += "\nAverage speed: " + Helpers.BytesToString(avgSpeed) + "/second. " +
+            ProgressText.text += "\nAverage speed: " + IfcHelpers.BytesToString(avgSpeed) + "/second. " +
                                  "(FPS: " + fps.ToString("0") + ")";
-            ProgressText.text += "\n\nProgress: " + Helpers.BytesToString(parsedBytes) + "/" +
-                                 Helpers.BytesToString(_byteCount) +
+            ProgressText.text += "\n\nProgress: " + IfcHelpers.BytesToString(parsedBytes) + "/" +
+                                 IfcHelpers.BytesToString(_byteCount) +
                                  " (" + percent.ToString("0") + "%)";
             ProgressSlider.value = percent;
             // Wait for next frame

@@ -11,10 +11,29 @@ public class MeshTags : MeshEditor
     private void Awake()
 	{
         // FORMAT:
-        // Name:Tag x (Type)
+        // 'Name',Tag,IfcType x
         // where x (optional) is added by FME because two objects cannot have the same name
-	    GetTag();
-	    GetIfcType();
+
+        // Remove x
+	    var lastSpace = name.LastIndexOf(' ');
+        if (lastSpace > name.LastIndexOf("Ifc"))
+        {
+            name = name.Substring(0, lastSpace);
+        }
+        
+        // Split into values
+	    var values = Helpers.SplitCsvLine(name);
+	    if (values.Length != 3)
+	    {
+	        Destroy(this);
+            return;
+	    }
+
+        // Get values
+	    Tag = uint.Parse(values[1]);
+	    IfcType = values[2];
+        
+        // Store mesh
 	    MeshLibrary.AddGameObject(Tag, IfcType, gameObject);
 	}
 

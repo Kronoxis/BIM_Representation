@@ -247,7 +247,7 @@ public class IFCEntity
         File = file;
         Id = id;
         Keys = new List<string>();
-        Properties = Helpers.SplitProperties(propertiesStr, delim);
+        Properties = IfcHelpers.SplitProperties(propertiesStr, delim);
     }
 
     protected void AddKey(string name)

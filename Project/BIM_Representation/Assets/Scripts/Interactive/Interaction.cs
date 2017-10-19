@@ -8,6 +8,6 @@ public class Interaction : MonoBehaviour {
 
     public void Trigger()
     {
-        _isTriggered = !_isTriggered;
+        _isTriggered = true;
     }
 }
