@@ -21,11 +21,10 @@ public class DoorPropertiesParser : MonoBehaviour
         foreach (var valueList in values)
         {
             GameObject go = new GameObject();
-            go.AddComponent<MeshTag>();
             var properties = go.AddComponent<PropertiesContainer>();
             properties.CreateProperties(keys.ToArray(), valueList);
-            var tag = uint.Parse(properties["Tag"]);
-            go.name = "DoorProperties:" + tag;
+            var ifcTag = uint.Parse(properties["Tag"]);
+            go.name = "DoorProperties:" + ifcTag;
             go.transform.SetParent(parent.transform);
             go.transform.position = new Vector3(
                 -float.Parse(properties["CenterX"]),
@@ -34,18 +33,19 @@ public class DoorPropertiesParser : MonoBehaviour
             );
             var startAngle = float.Parse(properties["StartAngle"]);
             var sweepAngle = float.Parse(properties["SweepAngle"]);
-            AddDoorScript(tag, go, startAngle, sweepAngle);
+            go.AddComponent<MeshTags>();
+            AddDoorScript(ifcTag, go, startAngle, sweepAngle);
         }
     }
 
-    private void AddDoorScript(uint tag, GameObject pivot, float startAngle, float sweepAngle)
+    private void AddDoorScript(uint ifcTag, GameObject pivot, float startAngle, float sweepAngle)
     {
         pivot.AddComponent<Door>().Set(pivot, startAngle, sweepAngle);
         pivot.AddComponent<Rigidbody>().isKinematic = true;
-        foreach (var go in MeshLibrary.GetGameObjects(tag))
+        foreach (var go in MeshLibrary.GetGameObjects(ifcTag))
         {
-            var renderer = go.GetComponent<MeshRenderer>();
-            if (renderer && !renderer.material.name.Contains("Frame"))
+            var ren = go.GetComponent<MeshRenderer>();
+            if (ren && !ren.material.name.Contains("Frame"))
                 go.transform.SetParent(pivot.transform);
         }
     }

@@ -75,6 +75,11 @@ public static class Helpers
         return toRet;
     }
 
+    public static List<IFCEntity> ToEntityList(this List<uint> ids, IFCDataContainer container)
+    {
+        return container.GetEntities(ids);
+    }
+
     public static List<string> SplitProperties(string s, char delim)
     {
         List<string> properties = new List<string>();

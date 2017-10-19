@@ -148,26 +148,25 @@ public class IFCBuildingGenerator : MonoBehaviour
                 var goBuildingElement = CreateBuildingElement(element, goBuilding.transform);
                 var buildingElementRepresentation = element.GetReference("Representation");
                 if (buildingElementRepresentation == null) continue;
-                var buildingElementRepresentations = buildingElementRepresentation.GetProperty("Representations").AsList().AsIds();
-                foreach (var representation in container.GetEntities(buildingElementRepresentations))
+                var buildingElementRepresentations = buildingElementRepresentation.GetReferences<IIFCRepresentation>("Representations");
+                foreach (var representation in buildingElementRepresentations)
                 {
-                    var goRepresentation = CreateRepresentation((IIFCRepresentation)representation, goBuildingElement.transform);
-                    var items = representation.GetProperty("Items").AsList().AsIds();
+                    var goRepresentation = CreateRepresentation(representation, goBuildingElement.transform);
+                    var items = representation.GetReferences<IIFCRepresentationItem>("Items");
                     foreach (var item in items)
                     {
-                        var itemEntity = container.GetEntity(item);
-                        if (itemEntity.Is<IIFCManifoldSolidBrep>(true))
+                        if (item.Is<IIFCManifoldSolidBrep>(true))
                         {
-                            CreateMesh((IIFCManifoldSolidBrep)itemEntity, goRepresentation.transform);
+                            CreateMeshFromBrep((IIFCManifoldSolidBrep)item, goRepresentation.transform);
                         }
-                        else if (itemEntity.Is<IFCMappedItem>(true))
+                        else if (item.Is<IFCMappedItem>(true))
                         {
-                            var source = itemEntity.GetReference<IFCRepresentationMap>("MappingSource");
-                            //var target = itemEntity.GetReference("MappingTarget");
-                            var mappedRepresentations = source.GetReference<IIFCRepresentation>("MappedRepresentation")
-                                .GetProperty("Representations").AsList().AsIds();
-                            foreach (var mappedRepresentation in container.GetEntities(mappedRepresentations))
-                                CreateRepresentation((IIFCRepresentation)mappedRepresentation, goRepresentation.transform);
+                            
+                            var source = item.GetReference<IFCRepresentationMap>("MappingSource");
+                            var mappedRepresentationItems = source.GetReference<IIFCRepresentation>("MappedRepresentation")
+                                .GetReferences<IIFCRepresentationItem>("Items");
+                            foreach (var mappedRepresentationItem in mappedRepresentationItems)
+                                CreateRepresentationItem(mappedRepresentationItem, goRepresentation.transform, container);
                         }
                     }
                 }
@@ -251,15 +250,46 @@ public class IFCBuildingGenerator : MonoBehaviour
         var goName = idName + " (" + type + ")";
         return CreateGameObject(representation, goName, parent, pos, new Vector3(0, 0, 0), 1);
     }
+
+    private GameObject CreateRepresentationItem(IIFCRepresentationItem representationItem, Transform parent, IFCDataContainer container)
+    {
+        var go = new GameObject();
+        go.transform.SetParent(parent, false);
+        go.name = representationItem.Id.ToString();
+
+        if (representationItem.Is<IFCFaceBasedSurfaceModel>(true))
+            CreateMeshFromFaceSets(
+                representationItem.GetReferences<IFCConnectedFaceSet>("FbsmFaces").ToArray(), go.transform);
+        
+        else if (representationItem.Is<IFCShellBasedSurfaceModel>(true))
+            CreateMeshFromFaceSets(
+                representationItem.GetReferences<IFCConnectedFaceSet>("SbsmFaces").ToArray(), go.transform);
+
+        return go;
+    }
     #endregion
 
     #region Mesh Creation
-    private void CreateMesh(IIFCManifoldSolidBrep brep, Transform parent)
+    private void CreateMeshFromBrep(IIFCManifoldSolidBrep brep, Transform parent)
+    {
+        CreateMeshFromFaceSet(brep.GetReference<IFCConnectedFaceSet>("Outer"), parent);
+    }
+
+    private void CreateMeshFromFaceSets(IFCConnectedFaceSet[] faceSets, Transform parent)
+    {
+        foreach (var faceSet in faceSets)
+        {
+            // Create Mesh
+            CreateMeshFromFaceSet(faceSet, parent);
+        }
+    }
+
+    private void CreateMeshFromFaceSet(IFCConnectedFaceSet faceSet, Transform parent)
     {
         // Create GameObject
         var go = new GameObject();
         go.transform.SetParent(parent, false);
-        go.name = brep.Id.ToString();
+        go.name = faceSet.Id.ToString();
 
         // Add Mesh Filter
         var mf = go.AddComponent<MeshFilter>();
@@ -268,7 +298,7 @@ public class IFCBuildingGenerator : MonoBehaviour
         List<int> indices;
         List<Vector3> normals;
         List<Vector2> uvs;
-        CreateBuffers(brep.GetReference<IIFCConnectedFaceSet>("Outer"), out vertices, out indices, out normals, out uvs);
+        CreateBuffers(faceSet, out vertices, out indices, out normals, out uvs);
         mf.mesh.vertices = vertices.ToArray();
         mf.mesh.triangles = indices.ToArray();
         mf.mesh.normals = normals.ToArray();
@@ -280,10 +310,10 @@ public class IFCBuildingGenerator : MonoBehaviour
         mr.material = DefaultMaterial;
 
         // Add Metadata
-        go.AddComponent<Metadata>().SetMetadata(brep);
+        go.AddComponent<Metadata>().SetMetadata(faceSet);
     }
 
-    public void CreateBuffers(IIFCConnectedFaceSet geometrySet,
+    public void CreateBuffers(IFCConnectedFaceSet geometrySet,
          out List<Vector3> vertices, out List<int> indices, out List<Vector3> normals, out List<Vector2> uvs)
     {
         vertices = new List<Vector3>();
@@ -291,16 +321,16 @@ public class IFCBuildingGenerator : MonoBehaviour
         normals = new List<Vector3>();
         uvs = new List<Vector2>();
 
-        var container = IFCDataManager.GetDataContainer(geometrySet.File);
-        foreach (var face in geometrySet.GetProperty("CfsFaces").AsList().AsIds())
+        foreach (var face in geometrySet.GetReferences<IFCFace>("CfsFaces"))
         {
-            foreach (var bound in container.GetEntity(face).GetProperty("Bounds").AsList().AsIds())
+            foreach (var bound in face.GetReferences<IFCFaceBound>("Bounds"))
             {
-                var loopId = container.GetEntity(bound).GetProperty("Bound").AsId();
+                var loop = bound.GetReference<IFCLoop>("Bound");
+                if (!loop.Is<IFCPolyLoop>(true)) continue;
                 List<Vector3> vertsFromLoop = new List<Vector3>();
-                foreach (var point in container.GetEntity(loopId).GetProperty("Polygon").AsList().AsIds())
+                foreach (var point in loop.GetReferences<IFCCartesianPoint>("Polygon"))
                 {
-                    var coords = container.GetEntity(point).GetProperty("Coordinates").AsList();
+                    var coords = point.GetProperty("Coordinates").AsList();
                     vertsFromLoop.Add(new Vector3(coords[0].AsFloat(), coords[1].AsFloat(), coords[2].AsFloat()));
                 }
                 AddToBuffer(vertsFromLoop, ref vertices, ref indices, ref normals, ref uvs);

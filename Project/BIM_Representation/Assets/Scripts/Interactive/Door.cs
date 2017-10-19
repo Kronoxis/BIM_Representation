@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Door : MonoBehaviour
+public class Door : Interaction
 {
 
     private bool _open = false;
-    private bool _isTriggered = false;
     private GameObject _pivot;
     private Coroutine _openingCoroutine;
     private float _openAngle; 
@@ -41,11 +40,5 @@ public class Door : MonoBehaviour
         _pivot = pivot;
         if (startAngle > 80 && startAngle < 100) _openAngle = sweepAngle;
         else _openAngle = -sweepAngle;
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        _isTriggered = true;
-        Destroy(other.gameObject);
     }
 }
