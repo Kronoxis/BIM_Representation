@@ -3,20 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class MeshDoubleFaced : MeshEditor
+public class MeshDoubleFaced : MonoBehaviour
 {
-    private void Awake()
+    public void DoubleFace(MeshFilter meshFilter)
     {
-        var meshFilter = GetComponent<MeshFilter>();
-        if (meshFilter)
-            CreateDoubleSidedMesh(meshFilter);
-        else
-            Destroy(this);
-    }
-
-    private void CreateDoubleSidedMesh(MeshFilter meshFilter)
-    {
-        var mesh = meshFilter.mesh;
+        var mesh = meshFilter.sharedMesh;
         var vertices = mesh.vertices;
         var normals = mesh.normals;
         var uvs = mesh.uv;
@@ -72,6 +63,6 @@ public class MeshDoubleFaced : MeshEditor
         mesh.triangles = newIndices;
         mesh.normals = newNormals;
         mesh.uv = newUvs;
-        GetComponent<MeshCollider>().sharedMesh = mesh;
+        meshFilter.gameObject.GetComponent<MeshCollider>().sharedMesh = mesh;
     }
 }
