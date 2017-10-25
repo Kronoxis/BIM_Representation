@@ -20,6 +20,8 @@ public class MovePlayer : MonoBehaviour
     private Coroutine _crouchCoroutine;
     private bool _isCrouch = false;
 
+    private bool _isLooking = true;
+
     private void Start()
     {
         _controller = GetComponent<CharacterController>();
@@ -29,14 +31,29 @@ public class MovePlayer : MonoBehaviour
         _cameraTransform.localPosition = new Vector3(_cameraTransform.localPosition.x, Height - 0.1f, _cameraTransform.localPosition.z);
         _controller.height = Height;
         _controller.center = new Vector3(_controller.center.x, Height / 2, _controller.center.z);
+
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     private void Update()
     {
+        ToggleLook();
         Move();
-        Rotate();
-        Crouch();
-        Interact();
+        if (_isLooking)
+        {
+            Rotate();
+            Crouch();
+            Interact();
+        }
+    }
+
+    private void ToggleLook()
+    {
+        if (Input.GetButtonUp("MoveCam"))
+        {
+            _isLooking = !_isLooking;
+            Cursor.lockState = _isLooking ? CursorLockMode.Locked : CursorLockMode.None;
+        }
     }
 
     private void Move()
