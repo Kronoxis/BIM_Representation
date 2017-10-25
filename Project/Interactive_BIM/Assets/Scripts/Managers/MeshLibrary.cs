@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 [ExecuteInEditMode]
-public static class MeshLibrary
+public class MeshLibrary : MonoBehaviour
 {
     private static MultiValueDictionary<uint, GameObject> _objectsByTag = new MultiValueDictionary<uint, GameObject>();
     private static MultiValueDictionary<string, GameObject> _objectsByType = new MultiValueDictionary<string, GameObject>();
@@ -21,6 +21,12 @@ public static class MeshLibrary
     {
         _objectsByTag.Remove(go.GetComponent<MeshTags>().Tag, go);
         _objectsByType.Remove(go.GetComponent<MeshTags>().IfcType, go);
+    }
+
+    public static void Clear()
+    {
+        _objectsByTag.Clear();
+        _objectsByType.Clear();
     }
 
     public static GameObject[] GetGameObjects(uint tag)

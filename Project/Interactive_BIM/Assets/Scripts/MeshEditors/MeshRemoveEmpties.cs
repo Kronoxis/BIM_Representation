@@ -16,6 +16,9 @@ public class MeshRemoveEmpties : MonoBehaviour
             if (child.GetComponent<MeshFilter>()) continue;
             toDestroy.Add(child.gameObject);
         }
-        toDestroy.ForEach(x => DestroyImmediate(x));
+        toDestroy.ForEach(x =>
+        {
+            if (x) DestroyImmediate(x);
+        });
     }
 }

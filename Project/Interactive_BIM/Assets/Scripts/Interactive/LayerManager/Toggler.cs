@@ -10,4 +10,13 @@ public class Toggler : MonoBehaviour
         obj.SetActive(!obj.activeInHierarchy);
     }
 
+    public void EnableAll(GameObject ContentParent)
+    {
+        for (int i = 0; i < ContentParent.transform.childCount; ++i)
+        {
+            var child = ContentParent.transform.GetChild(i);
+            if (child.name == "LayerTemplate") continue;
+            child.GetComponent<Toggle>().isOn = true;
+        }
+    }
 }

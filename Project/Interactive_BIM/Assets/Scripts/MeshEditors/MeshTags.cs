@@ -36,7 +36,7 @@ public class MeshTags : MonoBehaviour
         
         // Split into values
 	    var values = Helpers.SplitCsvLine(name);
-	    if (values.Length != 3)
+	    if (values.Length < 3)
 	    {
 	        DestroyImmediate(this);
             return;

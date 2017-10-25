@@ -15,6 +15,11 @@ public class MeshLayerer : MonoBehaviour
             layer.name = type;
             foreach (var go in MeshLibrary.GetGameObjects(type))
             {
+                if (!go)
+                {
+                    Debug.Log("MeshLibrary contains null in type " + type);
+                    continue;
+                }
                 if (go.GetComponent<MeshRenderer>())
                     go.transform.SetParent(layer);
             }
