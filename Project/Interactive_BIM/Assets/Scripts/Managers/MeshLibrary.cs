@@ -11,8 +11,10 @@ public static class MeshLibrary
 
     public static void AddGameObject(uint tag, string type, GameObject go)
     {
-        _objectsByTag.Add(tag, go);
-        _objectsByType.Add(type, go);
+        if (!_objectsByTag.ContainsValue(tag, go))
+            _objectsByTag.Add(tag, go);
+        if (!_objectsByType.ContainsValue(type, go))
+            _objectsByType.Add(type, go);
     }
 
     public static void RemoveGameObject(GameObject go)

@@ -11,9 +11,14 @@ public class MeshTags : MonoBehaviour
     public void AddTags(MeshFilter mf)
     {
         var script = mf.gameObject.GetComponent<MeshTags>();
-        if (script == null)
+        if (!script)
+        {
             script = mf.gameObject.AddComponent<MeshTags>();
-        script.SetTags();
+            script.SetTags();
+        }
+
+        // Store mesh
+        MeshLibrary.AddGameObject(script.Tag, script.IfcType, mf.gameObject);
     }
 
     private void SetTags()
@@ -39,9 +44,6 @@ public class MeshTags : MonoBehaviour
 
         // Get values
 	    Tag = uint.Parse(values[1]);
-	    IfcType = values[2];
-        
-        // Store mesh
-	    MeshLibrary.AddGameObject(Tag, IfcType, gameObject);
+	    IfcType = values[2]; 
 	}
 }
