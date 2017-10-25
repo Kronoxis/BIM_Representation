@@ -5,9 +5,7 @@ Research to how BIM can be interactively displayed in Unity.
 
 ## Implemented Features
 - Opening and closing doors
-
-## WIP Features
 - Layer Manager
 
-## Planned Features
+## WIP Features
 - VR Support
