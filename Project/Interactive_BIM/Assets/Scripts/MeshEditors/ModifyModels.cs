@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using System.Linq;
+using System.Reflection;
+using UnityEditor;
 
 [RequireComponent(typeof(MeshRemoveEmpties))]
 [RequireComponent(typeof(MeshDoubleFaced))]
@@ -13,17 +15,10 @@ using System.Linq;
 [ExecuteInEditMode]
 public class ModifyModels : MonoBehaviour
 {
-    [Header("Models")]
-    public List<GameObject> Models = new List<GameObject>();
-    [Header("Modifications")]
-    public bool Tags = false;
-    public bool Layers = false;
-    public bool Unclutter = false;
-    [Tooltip("Make sure model isn't already double faced before making it double faced!")]
-    public bool DoubleFaced = false;
-    public bool Doors = false;
+    [Header("Model")]
+    public GameObject Model;
     [Header("Files")]
-    public List<string> DoorPropertiesFilePath = new List<string>();
+    public string DoorPropertiesFilePath;
     [Space(10)]
     [Header("Apply Modifications")]
     public bool Modify = false;
@@ -32,77 +27,66 @@ public class ModifyModels : MonoBehaviour
     {
         if (Modify)
         {
-            if (Unclutter) RemoveEmpties();
-            if (Tags) AddTags();
-            if (Layers) SeparateLayers();
-            if (DoubleFaced) MakeDoubleFaced();
-            if (Doors) CreateDoors();
-            Models.Clear();
             Modify = false;
+            MeshLibrary.Clear();
+            if (!Model)
+            {
+                Debug.Log("No model specified");
+                return;
+            }
+            if (String.IsNullOrEmpty(DoorPropertiesFilePath))
+            {
+                Debug.Log("No Door Properties File specified");
+                return;
+            }
+
+            MakeDoubleFaced();
+            RemoveEmpties();
+            AddTags();
+            SeparateLayers();
+            CreateDoors();
+            Model = null;
         }
     }
 
     private void RemoveEmpties()
     {
         var script = GetComponent<MeshRemoveEmpties>();
-        foreach (var model in Models)
-        {
-            script.RemoveEmpties(model);
-            Debug.Log(model.name + " has no more empties");
-        }
-        Unclutter = false;
+        script.RemoveEmpties(Model);
+        Debug.Log(Model.name + " has no more empties");
     }
 
     private void AddTags()
     {
         var script = GetComponent<MeshTags>();
-        foreach (var model in Models)
+        foreach (var mesh in Model.GetComponentsInChildren<MeshFilter>())
         {
-            foreach (var mesh in model.GetComponentsInChildren<MeshFilter>())
-            {
-                script.AddTags(mesh);
-            }
-            Debug.Log(model.name + " is now tagged");
+            script.AddTags(mesh);
         }
-        Tags = false;
+        Debug.Log(Model.name + " is now tagged");
     }
 
     private void MakeDoubleFaced()
     {
         var script = GetComponent<MeshDoubleFaced>();
-        foreach (var model in Models)
+        foreach (var mesh in Model.GetComponentsInChildren<MeshFilter>())
         {
-            foreach (var mesh in model.GetComponentsInChildren<MeshFilter>())
-            {
-                script.DoubleFace(mesh);
-            }
-            Debug.Log(model.name + " is now double faced");
+            script.DoubleObject(mesh.gameObject);
         }
-        DoubleFaced = false;
+        Debug.Log(Model.name + " is now double faced");
     }
 
     private void SeparateLayers()
     {
         var script = GetComponent<MeshLayerer>();
-        foreach (var model in Models)
-        {
-            script.Separate(model);
-            Debug.Log(model.name + " is now layered");
-        }
-        Layers = false;
+        script.Separate(Model);
+        Debug.Log(Model.name + " is now layered");
     }
 
     private void CreateDoors()
     {
         var script = GetComponent<DoorCreator>();
-        int i = 0;
-        foreach (var model in Models)
-        {
-            if (DoorPropertiesFilePath.Count <= i) --i;
-            script.CreateDoors(model, DoorPropertiesFilePath[i]);
-            ++i;
-            Debug.Log(model.name + " now has doors");
-        }
-        Doors = false;
+        script.CreateDoors(Model, DoorPropertiesFilePath);
+        Debug.Log(Model.name + " now has doors");
     }
 }
