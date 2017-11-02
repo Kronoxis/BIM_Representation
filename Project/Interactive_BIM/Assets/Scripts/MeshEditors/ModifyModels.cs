@@ -11,27 +11,41 @@ using UnityEditor;
 [RequireComponent(typeof(MeshDoubleFaced))]
 [RequireComponent(typeof(MeshTags))]
 [RequireComponent(typeof(MeshLayerer))]
+[RequireComponent(typeof(DoorCreator))]
+[RequireComponent(typeof(FloorCreator))]
 
 [ExecuteInEditMode]
 public class ModifyModels : MonoBehaviour
 {
     [Header("Model")]
     public GameObject Model;
-    [Header("Files")]
+    [Header("Doors")]
     public string DoorPropertiesFilePath;
+
     [Space(10)]
+    [Header("Floors")]
+    public List<string> FloorTypes = new List<string> { "Slab", "StairFlight", "RampFlight" };
     [Header("Apply Modifications")]
     public bool Modify = false;
+
+    private void Start()
+    {
+        Modify = false;
+    }
 
     private void Update()
     {
         if (Modify)
         {
             Modify = false;
-            MeshLibrary.Clear();
             if (!Model)
             {
                 Debug.Log("No model specified");
+                return;
+            }
+            if (Model.GetComponent<TagModified>())
+            {
+                Debug.Log("Model has already been modified. Revert changes and try again.");
                 return;
             }
             if (String.IsNullOrEmpty(DoorPropertiesFilePath))
@@ -45,6 +59,8 @@ public class ModifyModels : MonoBehaviour
             AddTags();
             SeparateLayers();
             CreateDoors();
+            CreateFloors();
+            Model.AddComponent<TagModified>();
             Model = null;
         }
     }
@@ -86,7 +102,14 @@ public class ModifyModels : MonoBehaviour
     private void CreateDoors()
     {
         var script = GetComponent<DoorCreator>();
-        script.CreateDoors(Model, DoorPropertiesFilePath);
+        script.CreateDoors(DoorPropertiesFilePath);
         Debug.Log(Model.name + " now has doors");
+    }
+
+    private void CreateFloors()
+    {
+        var script = GetComponent<FloorCreator>();
+        script.CreateFloors(FloorTypes.ToArray());
+        Debug.Log(Model.name + " is now VR ready");
     }
 }

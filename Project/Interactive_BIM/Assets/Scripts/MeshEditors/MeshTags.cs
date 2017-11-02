@@ -5,6 +5,7 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class MeshTags : MonoBehaviour
 {
+    public string Name = "";
     public uint Tag = 0;
     public string IfcType = "";
 
@@ -43,6 +44,7 @@ public class MeshTags : MonoBehaviour
 	    }
 
         // Get values
+        Name = values[0];
 	    Tag = uint.Parse(values[1]);
 	    IfcType = values[2]; 
 	}

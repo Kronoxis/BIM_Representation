@@ -38,4 +38,16 @@ public class Door : Interaction
         if ((startAngle > 80 && startAngle < 100) || (startAngle > 260 && startAngle < 280)) OpenAngle = sweepAngle;
         else OpenAngle = -sweepAngle;
     }
+
+    public void OpenToPoint(Vector3 lookAtPoint)
+    {
+        //var currentDir = -transform.right;
+        var targetDir = lookAtPoint - transform.position;
+        targetDir.y = 0;
+        targetDir.Normalize();
+        transform.right = -targetDir;
+        var angle = transform.localEulerAngles.y;
+        angle = OpenAngle > 0 ? Mathf.Clamp(angle, 0, OpenAngle) : Mathf.Clamp(angle, OpenAngle, 0);
+        transform.localEulerAngles = new Vector3(0, angle, 0);
+    }
 }
