@@ -84,8 +84,7 @@ public class VRInput : MonoBehaviour
     private void Update()
     {
         #region Object Toggle
-        //if (Input.GetButtonUp("Select"))
-        if (Controller.GetPressUp(SteamVR_Controller.ButtonMask.Grip))
+        if (Controller.GetHairTriggerUp())
         {
             // Hide menu when clicking anywhere
             if (ObjectToggleMenu.activeInHierarchy)
@@ -96,16 +95,22 @@ public class VRInput : MonoBehaviour
             // Select object and open menu
             else
             {
-                var tr = Camera.main.transform;
                 RaycastHit hit;
-                if (Physics.Raycast(tr.position, tr.forward, out hit, _maxDistance))
+                if (Physics.Raycast(_trackedController.transform.position, _trackedController.transform.forward, out hit, _maxDistance))
                 {
                     // Only objects with MeshRenderer are valid
                     if (hit.collider.gameObject.GetComponent<MeshRenderer>())
                     {
                         _selected = hit.collider.gameObject;
-                        ObjectName.text = hit.collider.GetComponent<MeshTags>().Name;
-                        Popup(ObjectTogglePopupCanvas, ObjectToggleMenu, true);
+                        var tags = hit.collider.GetComponent<MeshTags>();
+                        ObjectName.text = tags.Name + " (" + tags.IfcType.Substring(3) + ")";
+
+                        var dist = 1.0f;
+                        RaycastHit hitCam;
+                        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hitCam, 2.0f))
+                            dist = hitCam.distance;
+                        Popup(ObjectTogglePopupCanvas, ObjectToggleMenu, true, dist);
+                        Popup(LayerManagerPopupCanvas, LayerManagerMenu, false);
                     }
                 }
             }
@@ -113,16 +118,18 @@ public class VRInput : MonoBehaviour
         #endregion
 
         #region Layer Manager
-        //if (Input.GetButtonUp("Menu"))
         if (Controller.GetPressUp(SteamVR_Controller.ButtonMask.ApplicationMenu))
         {
-            var tr = Camera.main.transform;
-            Popup(LayerManagerPopupCanvas, LayerManagerMenu, !LayerManagerMenu.activeInHierarchy);
+            var dist = 1.0f;
+            RaycastHit hit;
+            if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, 2))
+                dist = hit.distance;
+            Popup(LayerManagerPopupCanvas, LayerManagerMenu, !LayerManagerMenu.activeInHierarchy, dist);
+            Popup(ObjectTogglePopupCanvas, ObjectToggleMenu, false);
         }
         #endregion
 
         #region Teleport
-        //if (Input.GetButton("Teleport"))
         if (Controller.GetPress(SteamVR_Controller.ButtonMask.Touchpad))
         {
             RaycastHit hit;
@@ -147,16 +154,15 @@ public class VRInput : MonoBehaviour
             _reticle.SetActive(false);
         }
 
-        //if (Input.GetButtonUp("Teleport") && _shouldTeleport) 
         if (Controller.GetPressUp(SteamVR_Controller.ButtonMask.Touchpad) && _shouldTeleport)
         {
             Teleport();
+            Popup(LayerManagerPopupCanvas, LayerManagerMenu, false);
         }
         #endregion
 
         #region Interact
-        //if (Input.GetButtonUp("Interact"))
-        if (Controller.GetHairTriggerUp())
+        if (Controller.GetPressUp(SteamVR_Controller.ButtonMask.Touchpad))
         {
             RaycastHit hit;
             if (Physics.Raycast(_trackedController.transform.position, transform.forward, out hit, 5, -1, QueryTriggerInteraction.Collide))
@@ -176,12 +182,12 @@ public class VRInput : MonoBehaviour
         #endregion
     }
 
-    private void Popup(Canvas canvas, GameObject menu, bool show)
+    private void Popup(Canvas canvas, GameObject menu, bool show, float maxDist = 1.0f)
     {
         if (show)
         {
             var tr = Camera.main.transform;
-            canvas.GetComponent<RectTransform>().position = tr.position + tr.forward;
+            canvas.GetComponent<RectTransform>().position = tr.position + tr.forward * (Mathf.Min(1.0f, maxDist) - 0.1f);
             canvas.GetComponent<RectTransform>().rotation =
                 Quaternion.Euler(tr.rotation.eulerAngles.x, tr.rotation.eulerAngles.y, 0);
         }
@@ -259,8 +265,26 @@ public class VRInput : MonoBehaviour
             foreach (var mf in obj.GetComponentsInChildren<MeshFilter>(true))
             {
                 ++count;
-                if (count % 50 == 0) yield return StartCoroutine(Toggle(mode, mf.gameObject));
+                if (count % 30 == 0) yield return StartCoroutine(Toggle(mode, mf.gameObject));
                 else StartCoroutine(Toggle(mode, mf.gameObject));
+            }
+
+            // Edit button colors
+            var panel = LayerManagerMenu.transform.Find("Panel");
+            for (int i = 0; i < panel.childCount; ++i)
+            {
+                switch (mode)
+                {
+                    case ToggleObject.ToggleMode.Show:
+                        panel.GetChild(i).GetComponent<Button>().colors = ShowAllButton.colors;
+                        break;
+                    case ToggleObject.ToggleMode.Fade:
+                        panel.GetChild(i).GetComponent<Button>().colors = FadeAllButton.colors;
+                        break;
+                    case ToggleObject.ToggleMode.Hide:
+                        panel.GetChild(i).GetComponent<Button>().colors = HideAllButton.colors;
+                        break;
+                }
             }
             yield return 0;
             count = 0;
@@ -271,6 +295,18 @@ public class VRInput : MonoBehaviour
     {
         _mode = (ToggleObject.ToggleMode)(((int)_mode + 1) % 3);
         ModeButton.GetComponentInChildren<Text>().text = "Mode: " + _mode;
+        switch (_mode)
+        {
+            case ToggleObject.ToggleMode.Show:
+                ModeButton.colors = ShowAllButton.colors;
+                break;
+            case ToggleObject.ToggleMode.Fade:
+                ModeButton.colors = FadeAllButton.colors;
+                break;
+            case ToggleObject.ToggleMode.Hide:
+                ModeButton.colors = HideAllButton.colors;
+                break;
+        }
     }
     #endregion
 

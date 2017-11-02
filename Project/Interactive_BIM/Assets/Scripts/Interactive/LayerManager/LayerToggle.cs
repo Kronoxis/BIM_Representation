@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class LayerToggle : MonoBehaviour, ISelectHandler, IDeselectHandler
 {
     public GameObject Layer;
+    public Button ModeButton;
 
     private void Start()
     {
@@ -21,6 +22,8 @@ public class LayerToggle : MonoBehaviour, ISelectHandler, IDeselectHandler
             {
                 GetComponent<ToggleObject>().Toggle(x, VRInput.Mode);
             });
+        GetComponent<Button>().colors = ModeButton.colors;
+        GetComponentInChildren<Text>().color = GetComponent<Button>().colors.highlightedColor;
     }
 
     public void OnSelect(BaseEventData e)
@@ -30,6 +33,6 @@ public class LayerToggle : MonoBehaviour, ISelectHandler, IDeselectHandler
 
     public void OnDeselect(BaseEventData e)
     {
-        GetComponentInChildren<Text>().color = GetComponent<Button>().colors.normalColor;
+        GetComponentInChildren<Text>().color = Color.black;
     }
 }

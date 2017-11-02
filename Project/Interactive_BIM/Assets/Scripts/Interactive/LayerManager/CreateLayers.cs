@@ -13,14 +13,14 @@ public class CreateLayers : MonoBehaviour
 
     private void Start()
     {
-        foreach (var layer in LayerLibrary.GetLayers())
+        foreach (var layerName in LayerLibrary.GetLayerNames())
         {
             // Create Toggle
             var toggle = Instantiate(LayerTemplate, ContentParent.transform);
 
             // Set text to layer name
-            toggle.name = layer.name;
-            toggle.transform.GetComponentInChildren<Text>().text = layer.name.Substring(3);
+            toggle.name = layerName;
+            toggle.transform.GetComponentInChildren<Text>().text = layerName.Substring(3);
 
             // Set Toggle Position
             var pos = toggle.GetComponent<RectTransform>().localPosition;
@@ -34,7 +34,7 @@ public class CreateLayers : MonoBehaviour
             ContentParent.GetComponent<RectTransform>().sizeDelta = new Vector2(size.x, size.y + DeltaY);
 
             // Layer Toggle script
-            toggle.GetComponent<LayerToggle>().Layer = layer.gameObject;
+            toggle.GetComponent<LayerToggle>().Layer = LayerLibrary.GetLayer(layerName);
 
             // Move y down
             Y -= DeltaY;

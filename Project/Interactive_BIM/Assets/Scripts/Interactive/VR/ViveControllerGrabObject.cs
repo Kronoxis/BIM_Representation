@@ -4,18 +4,18 @@ using UnityEngine;
 
 public class ViveControllerGrabObject : MonoBehaviour
 {
-    private SteamVR_TrackedController _trackedObj;
+    private SteamVR_TrackedController _trackedController;
     private GameObject _collidingObject;
     private GameObject _objectInHand;
 
     private SteamVR_Controller.Device Controller
     {
-        get { return SteamVR_Controller.Input((int) _trackedObj.controllerIndex); }
+        get { return SteamVR_Controller.Input((int)_trackedController.controllerIndex); }
     }
 
     private void Awake()
     {
-        _trackedObj = GetComponent<SteamVR_TrackedController>();
+        _trackedController = GetComponent<SteamVR_TrackedController>();
     }
 
     private void Update()
@@ -25,6 +25,14 @@ public class ViveControllerGrabObject : MonoBehaviour
             if (_collidingObject)
             {
                 GrabObject();
+            }
+        }
+
+        if (Controller.GetHairTrigger())
+        {
+            if (_objectInHand)
+            {
+                _objectInHand.GetComponent<Door>().OpenToPoint(_trackedController.transform.position);
             }
         }
 
@@ -40,7 +48,14 @@ public class ViveControllerGrabObject : MonoBehaviour
     // Colliding Object
     private void SetCollidingObject(Collider col)
     {
-        if (_collidingObject || !col.GetComponent<Rigidbody>()) return;
+        if (_collidingObject || !col.GetComponent<Rigidbody>())
+        {
+            // Check parent
+            if (!col.transform.parent.GetComponent<Rigidbody>())
+                return;
+            _collidingObject = col.transform.parent.gameObject;
+            return;
+        }
         _collidingObject = col.gameObject;
     }
 
@@ -64,31 +79,12 @@ public class ViveControllerGrabObject : MonoBehaviour
     {
         _objectInHand = _collidingObject;
         _collidingObject = null;
-
-        var joint = AddFixedJoint();
-        joint.connectedBody = _objectInHand.GetComponent<Rigidbody>();
-    }
-
-    private FixedJoint AddFixedJoint()
-    {
-        FixedJoint joint = gameObject.AddComponent<FixedJoint>();
-        joint.breakForce = 20000;
-        joint.breakTorque = 20000;
-        return joint;
     }
 
     // Releasing Object
     private void ReleaseObject()
     {
-        var joint = GetComponent<FixedJoint>();
-        if (joint)
-        {
-            joint.connectedBody = null;
-            Destroy(joint);
-
-            _objectInHand.GetComponent<Rigidbody>().velocity = Controller.velocity;
-            _objectInHand.GetComponent<Rigidbody>().angularVelocity = Controller.angularVelocity;
-        }
-        _objectInHand = null;
+        _objectInHand.GetComponent<Rigidbody>().velocity = Controller.velocity;
+        _objectInHand.GetComponent<Rigidbody>().angularVelocity = Controller.angularVelocity;
     }
 }

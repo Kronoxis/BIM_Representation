@@ -7,6 +7,7 @@ using UnityEngine;
 public class LayerLibrary : MonoBehaviour
 {
     public GameObject ModelRoot;
+    public GameObject VRFloorRoot;
     public int LayerCount = 0;
 
     private static Dictionary<string, GameObject> _layers = new Dictionary<string, GameObject>();
@@ -14,6 +15,13 @@ public class LayerLibrary : MonoBehaviour
     private void Awake()
     {
         Clear();
+
+        var floorLayer = VRFloorRoot.GetComponent<MeshTags>().IfcType;
+        if (!_layers.ContainsKey(floorLayer))
+            _layers.Add(floorLayer, VRFloorRoot);
+        else
+            _layers[floorLayer] = VRFloorRoot;
+
         var model = ModelRoot.transform.GetChild(0);
         for (int i = 0; i < model.childCount; ++i)
         {
