@@ -26,12 +26,14 @@ public class DoorCreator : MonoBehaviour
             // Set name, parent, position
             var ifcTag = uint.Parse(properties["Tag"]);
             go.name = "DoorPivot:" + ifcTag;
-            go.transform.position = new Vector3(
+            var parent = MeshLibrary.GetGameObjects(ifcTag)[0].transform.parent;
+            go.transform.SetParent(parent);
+            go.transform.localPosition = new Vector3(
                 -float.Parse(properties["CenterX"]),
                 -float.Parse(properties["CenterZ"]),
                 -float.Parse(properties["CenterY"])
             );
-
+            
             // Get angles
             var startAngle = float.Parse(properties["StartAngle"]);
             var sweepAngle = float.Parse(properties["SweepAngle"]);
@@ -46,7 +48,6 @@ public class DoorCreator : MonoBehaviour
         pivot.AddComponent<Door>().Set(pivot, startAngle, sweepAngle);
         pivot.AddComponent<Rigidbody>().isKinematic = true;
         var gos = MeshLibrary.GetGameObjects(ifcTag);
-        pivot.transform.SetParent(gos[0].transform.parent);
         foreach (var go in gos)
         {
             var ren = go.GetComponent<MeshRenderer>();

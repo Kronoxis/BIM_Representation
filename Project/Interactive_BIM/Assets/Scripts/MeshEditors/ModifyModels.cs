@@ -28,6 +28,11 @@ public class ModifyModels : MonoBehaviour
     [Header("Apply Modifications")]
     public bool Modify = false;
 
+    private void Start()
+    {
+        Modify = false;
+    }
+
     private void Update()
     {
         if (Modify)
