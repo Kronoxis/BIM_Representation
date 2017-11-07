@@ -220,17 +220,13 @@ public class VRInput : MonoBehaviour
             // Get Script
             var script = GetComponent<ToggleObject>();
 
-            // Toggle Selected object and children
-            obj.transform.GetComponentsInChildren<Transform>().ToList()
-                .ForEach(x => script.Toggle(x.GetComponent<MeshRenderer>(), mode));
-
             // Toggle Backface object and children
             if (obj.transform.parent)
-                obj.transform.parent.GetComponentsInChildren<Transform>()
-                    .Where(x => x.name == obj.name && x != obj.transform && x.GetComponent<MeshRenderer>()).ToList()
+                obj.transform.parent.GetComponentsInChildren<Transform>(true)
+                    .Where(x => x.name == obj.name && x.GetComponent<MeshRenderer>()).ToList()
                     .ForEach(x =>
                     {
-                        x.GetComponentsInChildren<Transform>().ToList()
+                        x.GetComponentsInChildren<Transform>(true).ToList()
                             .ForEach(y => script.Toggle(y.GetComponent<MeshRenderer>(), mode));
                     });
             yield return 0;
